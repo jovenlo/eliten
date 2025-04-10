@@ -1,0 +1,212 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Playfair Display', serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: antiquewhite;
+    overflow-x: hidden;
+}
+
+/* Contact Section */
+.contact {
+    padding: 80px 0;
+    background-color: antiquewhite;
+}
+
+.section-title {
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+.section-title h2 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    position: relative;
+    color: #333;
+}
+
+.section-title h2::after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: #333;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.section-title p {
+    margin-bottom: 0;
+    font-size: 18px;
+    color: #666;
+}
+
+/* Info Boxes */
+.info-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    height: 100%;
+}
+
+.info-box i {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.info-box h3 {
+    font-size: 20px;
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.info-box p {
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Social Links */
+.social-links {
+    margin-top: 15px;
+}
+
+.social-links a {
+    font-size: 18px;
+    display: inline-block;
+    background: #333;
+    color: #fff;
+    line-height: 1;
+    padding: 8px 0;
+    margin-right: 4px;
+    border-radius: 50%;
+    text-align: center;
+    width: 36px;
+    height: 36px;
+    transition: 0.3s;
+}
+
+.social-links a:hover {
+    background: #666;
+    color: #fff;
+}
+
+/* Contact Form */
+.php-email-form {
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+.php-email-form .form-group {
+    padding-bottom: 20px;
+}
+
+.php-email-form input,
+.php-email-form textarea {
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+.php-email-form input:focus,
+.php-email-form textarea:focus {
+    border-color: #333;
+}
+
+.php-email-form input {
+    height: 44px;
+}
+
+.php-email-form textarea {
+    padding: 10px 12px;
+}
+
+.php-email-form button[type="submit"] {
+    background: #333;
+    border: 0;
+    padding: 10px 24px;
+    color: #fff;
+    transition: 0.4s;
+    border-radius: 4px;
+}
+
+.php-email-form button[type="submit"]:hover {
+    background: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact {
+        padding: 40px 0;
+    }
+    
+    .info-box {
+        padding: 20px;
+    }
+    
+    .php-email-form {
+        padding: 20px;
+    }
+}
+
+/* Navbar Styles */
+.navbar-links {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.navbar-link {
+    color: #333;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+.navbar-link a {
+    color: #333;
+    text-decoration: none;
+    padding: 0;
+}
+
+.navbar-link a:hover {
+    color: #666;
+    text-decoration: none;
+}
+
+.nav-toggle {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .navbar-links {
+        display: none;
+    }
+    
+    .nav-toggle {
+        display: block;
+    }
+} 

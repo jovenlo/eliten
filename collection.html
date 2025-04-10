@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>EITEN - Collection</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav>
+        <video src="production_id.mp4" autoplay muted loop></video>
+        <h1 class="name">E L I T E N</h1>
+        <div class="navbar-links">
+            <p class="navbar-link"><a href="index.html">Home</a></p>
+            <p class="navbar-link"><a href="contact.html">Contact</a></p>
+            <p class="navbar-link"><a href="About.html">About</a></p>
+            <p class="navbar-link"><a href="admin.html"> Admin </a></p>
+        </div>  
+        <div class="nav-toggle" onclick="shownavbar()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
+
+    <div class="marq">
+        <marquee behavior="solid" direction="straight"><i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer, Some limits hurry up its too late</i></marquee>
+        <div class="side-nav">
+            <p>
+                <i class="fa-solid fa-xmark" onclick="closenavbar()"></i>
+            </p>
+            <div class="side-navbar-links">
+                <p class="tog-navbar-link"><a href="index.html" class="texted0">Home</a></p>
+                <p class="tog-navbar-link"><a href="contact.html" class="texted0">Contact</a></p>
+                <p class="tog-navbar-link"><a href="About.html" class="texted0">About</a></p>
+            </div> 
+        </div>
+    </div>
+
+    <div class="collection">
+        <div class="texted3">
+            <h1 style="margin-left: 28%;">Collections</h1>
+        </div>
+
+        <button class="button-cart" onclick="window.location.href='cart.html'">
+            <svg viewBox="0 0 16 16" class="bi bi-cart-check" height="24" width="24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
+                <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"></path>
+                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+            </svg>
+        </button>
+
+        <div class="searchbar">
+            <input placeholder="Search" id="searchInput" onkeyup="searchProducts()">
+        </div>
+
+        <div class="texted3">
+            <h1>Select your fashion</h1>
+        </div>
+
+        <div class="items" id="products-container">
+            <!-- Products will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        // Load products from localStorage
+        function loadProducts() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.className = 'item-img';
+                productElement.innerHTML = `
+                    <img src="${product.imageUrl}" alt="${product.name}">
+                    <p>${product.name}</p>
+                    <p>$${product.price.toFixed(2)}</p>
+                    <buttonui onclick="window.location.href='product.html?id=${product.id}'">View Details</buttonui>
+                    <buttonui onclick="addToCart('${product.name}', ${product.price}, '${product.imageUrl}')">Add To Cart</buttonui>
+                    <buttonui onclick="buyNow('${product.name}', ${product.price}, '${product.imageUrl}')" class="buy-now-btn">Buy Now</buttonui>
+                `;
+                container.appendChild(productElement);
+            });
+        }
+
+        // Search functionality
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+
+            products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm)
+            ).forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.className = 'item-img';
+                productElement.innerHTML = `
+                    <img src="${product.imageUrl}" alt="${product.name}">
+                    <p>${product.name}</p>
+                    <p>$${product.price.toFixed(2)}</p>
+                    <buttonui onclick="window.location.href='product.html?id=${product.id}'">View Details</buttonui>
+                    <button onclick="addToCart('${product.name}', ${product.price}, '${product.imageUrl}')">Add To Cart</button>
+                    <button onclick="buyNow('${product.name}', ${product.price}, '${product.imageUrl}')" class="buy-now-btn">Buy Now</button>
+                `;
+                container.appendChild(productElement);
+            });
+        }
+
+        // Add to cart functionality
+        function addToCart(name, price, image) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Check if item already exists in cart
+            const existingItem = cart.find(item => item.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+            } else {
+                cart.push({
+                    name: name,
+                    price: price,
+                    image: image,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert('Item added to cart!');
+        }
+
+        // Buy Now functionality
+        function buyNow(name, price, image) {
+            const cart = [{
+                name: name,
+                price: price,
+                image: image,
+                quantity: 1
+            }];
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            window.location.href = 'checkout.html';
+        }
+
+        // Initialize products when page loads
+        document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+
+    <style>
+        /* From Uiverse.io by e-coders */ 
+buttonui {
+ appearance: none;
+ background-color: transparent;
+ border: 0.125em solid #1A1A1A;
+ border-radius: 0.9375em;
+ box-sizing: border-box;
+ color: #3B3B3B;
+ cursor: pointer;
+ display: inline-block;
+ font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+ font-size: 13px;
+ font-weight: 600;
+ line-height: normal;
+ margin-left: 4%;
+ margin-bottom: 4%;
+ height: 42px;
+ width: 54px;
+ outline: none;
+ padding: 15;
+ text-align: center;
+ text-decoration: none;
+ transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+ user-select: none;
+ -webkit-user-select: none;
+ touch-action: manipulation;
+ will-change: transform;
+}
+
+buttonui:disabled {
+ pointer-events: none;
+}
+
+buttonui:hover {
+ color: #fff;
+ background-color: #1A1A1A;
+ box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+ transform: translateY(-2px);
+}
+
+buttonui:active {
+ box-shadow: none;
+ transform: translateY(0);
+}
+    </style>
+</body>
+</html> 
