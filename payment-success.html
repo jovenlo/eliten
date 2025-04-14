@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>EITEN - Payment Status</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="payment.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav>
+        <video src="production_id.mp4" autoplay muted loop></video>
+        <h1 class="name">E L I T E N</h1>
+        <div class="navbar-links">
+            <p class="navbar-link"><a href="index.html">Home</a></p>
+            <p class="navbar-link"><a href="collection.html">Collection</a></p>
+            <p class="navbar-link"><a href="contact.html">Contact</a></p>
+            <p class="navbar-link"><a href="About.html">About</a></p>
+        </div>  
+        <div class="nav-toggle" onclick="shownavbar()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
+
+    <div class="marq">
+        <marquee behavior="solid" direction="straigth"><i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer, Some limits hurry up its too late</i></marquee>
+        <div class="side-nav">
+            <p>
+                <i class="fa-solid fa-xmark" onclick="closenavbar()"></i>
+            </p>
+            <div class="side-navbar-links">
+                <p class="tog-navbar-link"><a href="index.html" class="texted0">Home</a></p>
+                <p class="tog-navbar-link"><a href="collection.html" class="texted0">Collection</a></p>
+                <p class="tog-navbar-link"><a href="contact.html" class="texted0">Contact</a></p>
+                <p class="tog-navbar-link"><a href="About.html" class="texted0">About</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-status-container">
+        <div class="payment-status-content">
+            <div id="payment-success" style="display: none;">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h2>Payment Successful!</h2>
+                <p>Thank you for your purchase. Your order has been confirmed.</p>
+                <div class="order-details">
+                    <h3>Order Details</h3>
+                    <div id="order-info"></div>
+                </div>
+                <div class="payment-actions">
+                    <a href="index.html" class="continue-shopping">Continue Shopping</a>
+                    <a href="confirmation.html" class="view-order">View Order</a>
+                </div>
+            </div>
+            
+            <div id="payment-failed" style="display: none;">
+                <i class="fas fa-times-circle error-icon"></i>
+                <h2>Payment Failed</h2>
+                <p>We're sorry, but there was an issue processing your payment.</p>
+                <div class="error-details">
+                    <p id="error-message"></p>
+                </div>
+                <div class="payment-actions">
+                    <a href="payment.html" class="retry-payment">Retry Payment</a>
+                    <a href="index.html" class="continue-shopping">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            const orderId = urlParams.get('ORDER_ID');
+            const errorMsg = urlParams.get('error');
+            const responseCode = urlParams.get('RESPCODE');
+            const responseMsg = urlParams.get('RESPMSG');
+            const txnId = urlParams.get('TXNID');
+            const bankTxnId = urlParams.get('BANKTXNID');
+            const txnAmount = urlParams.get('TXNAMOUNT');
+            
+            // Load order details
+            const order = JSON.parse(localStorage.getItem('latestOrder')) || {};
+            
+            // Determine payment status
+            let paymentStatus = 'failed';
+            if (status === 'success' || orderId) {
+                paymentStatus = 'success';
+            } else if (responseCode === '01') { // Paytm success code
+                paymentStatus = 'success';
+            } else if (order.status === 'completed') {
+                paymentStatus = 'success';
+            }
+            
+            if (paymentStatus === 'success') {
+                // Show success message
+                document.getElementById('payment-success').style.display = 'block';
+                
+                // Update order status
+                order.status = 'completed';
+                order.txnId = txnId;
+                order.bankTxnId = bankTxnId;
+                localStorage.setItem('latestOrder', JSON.stringify(order));
+                
+                // Clear cart
+                localStorage.removeItem('cart');
+                
+                const orderInfo = document.getElementById('order-info');
+                if (order.items && order.items.length > 0) {
+                    orderInfo.innerHTML = `
+                        <p><strong>Order ID:</strong> ${orderId || order.date.replace(/[^a-zA-Z0-9]/g, '')}</p>
+                        <p><strong>Transaction ID:</strong> ${txnId || 'N/A'}</p>
+                        <p><strong>Bank Transaction ID:</strong> ${bankTxnId || 'N/A'}</p>
+                        <p><strong>Total Amount:</strong> ₹${txnAmount || order.total.toFixed(2)}</p>
+                        <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+                        <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
+                        <p><strong>Status:</strong> Completed</p>
+                    `;
+                }
+            } else {
+                // Show error message
+                document.getElementById('payment-failed').style.display = 'block';
+                
+                // Update order status
+                order.status = 'failed';
+                order.errorCode = responseCode;
+                localStorage.setItem('latestOrder', JSON.stringify(order));
+                
+                let errorMessage = 'Please try again or contact support.';
+                if (errorMsg) {
+                    errorMessage = errorMsg;
+                } else if (responseMsg) {
+                    errorMessage = responseMsg;
+                } else if (responseCode) {
+                    errorMessage = `Payment failed with code: ${responseCode}`;
+                }
+                
+                document.getElementById('error-message').textContent = errorMessage;
+            }
+        });
+    </script>
+</body>
+</html> 

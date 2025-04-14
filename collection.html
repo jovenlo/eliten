@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection - ELITEN</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">ELITEN</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="About.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="nav-toggle" onclick="shownavbar()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
+
+    <div class="marq">
+        <div class="side-nav" style="display: none;">
+            <div class="side-nav-header">
+                <h2>ELITEN</h2>
+                <button onclick="closenavbar()" class="close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="side-navbar-links">
+                <a href="index.html" class="tog-navbar-link">Home</a>
+                <a href="collection.html" class="tog-navbar-link">Collection</a>
+                <a href="About.html" class="tog-navbar-link">About</a>
+                <a href="contact.html" class="tog-navbar-link">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="collection">
+        <div class="texted3">
+            <h1 style="margin-left: 28%;">Collections</h1>
+        </div>
+
+        <button class="button-cart" onclick="window.location.href='cart.html'">
+            <svg viewBox="0 0 16 16" class="bi bi-cart-check" height="24" width="24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
+                <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"></path>
+                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+            </svg>
+        </button>
+
+        <div class="searchbar">
+            <input placeholder="Search" id="searchInput" onkeyup="searchProducts()">
+        </div>
+
+        <div class="texted3">
+            <h1>Select your fashion</h1>
+        </div>
+
+        <div class="products-grid" id="products-container">
+            <!-- Products will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="collection.js"></script>
+</body>
+</html> 

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>EITEN - Checkout</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/f6a9740089.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav>
+        <video src="production_id.mp4" autoplay muted loop></video>
+        <h1 class="name">E L I T E N</h1>
+        <div class="navbar-links">
+            <p class="navbar-link"><a href="index.html">Home</a></p>
+            <p class="navbar-link"><a href="collection.html">Collection</a></p>
+            <p class="navbar-link"><a href="contact.html">Contact</a></p>
+            <p class="navbar-link"><a href="About.html">About</a></p>
+        </div>  
+        <div class="nav-toggle" onclick="shownavbar()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
+
+    <div class="marq">
+        <marquee behavior="solid" direction="straigth"><i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer, Some limits hurry up its too late</i></marquee>
+        <div class="side-nav">
+            <p>
+                <i class="fa-solid fa-xmark" onclick="closenavbar()"></i>
+            </p>
+            <div class="side-navbar-links">
+                <p class="tog-navbar-link"><a href="index.html" class="texted0">Home</a></p>
+                <p class="tog-navbar-link"><a href="collection.html" class="texted0">Collection</a></p>
+                <p class="tog-navbar-link"><a href="contact.html" class="texted0">Contact</a></p>
+                <p class="tog-navbar-link"><a href="About.html" class="texted0">About</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-container">
+        <div class="checkout-form">
+            <h2>Billing Information</h2>
+            <form id="billing-form">
+                <div class="form-group">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state" required>
+                </div>
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" id="country" required>
+                </div>
+            </form>
+        </div>
+
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div id="checkout-items">
+                <!-- Cart items will be dynamically added here -->
+            </div>
+            <div class="summary-item">
+                <span>Subtotal:</span>
+                <span id="checkout-subtotal">₹0.00</span>
+            </div>
+            <div class="summary-item">
+                <span>Tax (10%):</span>
+                <span id="checkout-tax">₹0.00</span>
+            </div>
+            <div class="summary-item">
+                <span>Shipping:</span>
+                <span id="shipping">₹5.99</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total:</span>
+                <span id="checkout-total">₹0.00</span>
+            </div>
+            <button onclick="proceedToPayment()" class="payment-btn">Proceed to Payment</button>
+        </div>
+    </div>
+
+    <script src="checkout.js"></script>
+</body>
+</html> 
