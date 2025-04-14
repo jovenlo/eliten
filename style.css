@@ -2492,3 +2492,119 @@ marquee i {
     background: #ccc;
     cursor: not-allowed;
 }
+
+/* About Page Enhancements */
+.about-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f8f9fa;
+}
+
+.texted4 h1 {
+    text-align: center;
+    font-family: 'Lucida Calligraphy', serif;
+    color: #333;
+    font-size: 3rem;
+    margin: 2rem 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.texted5 {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin: 2rem auto;
+    max-width: 1000px;
+}
+
+.texted5 h3 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+}
+
+.texted5 h4 {
+    color: #333;
+    font-size: 1.5rem;
+    margin: 1.5rem 0 1rem;
+    font-family: 'Lucida Calligraphy', serif;
+}
+
+.texted5 h5 {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.texted5 h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem;
+    text-align: center;
+    font-family: 'Lucida Calligraphy', serif;
+}
+
+.texted5 span {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.marq1 {
+    background: #2c3e50;
+    color: white;
+    padding: 1rem;
+    margin-top: 2rem;
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.5rem;
+}
+
+.marq1 marquee {
+    color: #fff;
+}
+
+.marq1 span {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+/* Responsive Design for About Page */
+@media screen and (max-width: 768px) {
+    .about-section {
+        padding: 1rem;
+    }
+
+    .texted4 h1 {
+        font-size: 2rem;
+    }
+
+    .texted5 {
+        padding: 1rem;
+    }
+
+    .texted5 h3 {
+        font-size: 1.5rem;
+    }
+
+    .texted5 h4 {
+        font-size: 1.2rem;
+    }
+
+    .texted5 h5 {
+        font-size: 1rem;
+    }
+
+    .texted5 h2 {
+        font-size: 1.5rem;
+    }
+
+    .marq1 {
+        font-size: 1.2rem;
+    }
+}
