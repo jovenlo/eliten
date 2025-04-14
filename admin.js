@@ -364,28 +364,207 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Inventory Management
-    function updateInventoryTable() {
-        const inventoryBody = document.getElementById('inventory-body');
-        const products = JSON.parse(localStorage.getItem('products'));
+    const searchBox = document.querySelector('.search-box input');
+    const stockFilter = document.querySelector('select[name="stock-status"]');
+    const sortFilter = document.querySelector('select[name="sort-by"]');
+    const inventoryTable = document.querySelector('.inventory-table tbody');
+    const lowStockAlert = document.querySelector('.low-stock-alert');
 
-        inventoryBody.innerHTML = products.map(product => `
-            <tr>
-                <td>${product.name}</td>
-                <td>${product.stock}</td>
-                <td>0</td>
-                <td>${product.stock > 0 ? 'In Stock' : 'Out of Stock'}</td>
-                <td>
-                    <button onclick="deleteProduct(${product.id})">Delete</button>
-                </td>
-            </tr>
-        `).join('');
+    // Initialize inventory display
+    async function initializeInventory() {
+        try {
+            // Check if user is authenticated
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                console.error('User not authenticated');
+                showNotification('Please login to access inventory', 'error');
+                return;
+            }
+
+            // Load products from Supabase
+            const products = await window.loadProducts();
+            if (!products || products.length === 0) {
+                console.log('No products found');
+                renderInventoryTable([]);
+                return;
+            }
+
+            // Transform products data for inventory display
+            const inventoryData = products.map(product => ({
+                id: product.id,
+                name: product.name,
+                category: product.category || 'Uncategorized',
+                price: product.price,
+                stock: product.stock,
+                lowStockThreshold: product.low_stock_threshold || 5,
+                description: product.description,
+                image_url: product.image_url,
+                created_at: product.created_at,
+                updated_at: product.updated_at
+            }));
+
+            renderInventoryTable(inventoryData);
+            updateLowStockAlerts(inventoryData);
+        } catch (error) {
+            console.error('Error loading inventory:', error);
+            showNotification('Error loading inventory data', 'error');
+        }
     }
 
-    // Initialize inventory table
-    updateInventoryTable();
+    // Render inventory table
+    function renderInventoryTable(data) {
+        if (!inventoryTable) {
+            console.error('Inventory table element not found');
+            return;
+        }
 
-    // Initialize products when page loads
-    loadProducts();
+        inventoryTable.innerHTML = '';
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.category}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td class="status-${getStockStatus(item.stock, item.lowStockThreshold)}">
+                    ${item.stock} units
+                </td>
+                <td>${item.lowStockThreshold} units</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-edit" onclick="editProduct(${item.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deleteProduct(${item.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            `;
+            inventoryTable.appendChild(row);
+        });
+    }
+
+    // Update low stock alerts
+    function updateLowStockAlerts(data) {
+        if (!lowStockAlert) {
+            console.error('Low stock alert element not found');
+            return;
+        }
+
+        const lowStockItems = data.filter(item => 
+            item.stock <= item.lowStockThreshold && item.stock > 0
+        );
+
+        if (lowStockItems.length === 0) {
+            lowStockAlert.style.display = 'none';
+            return;
+        }
+
+        lowStockAlert.style.display = 'block';
+        const alertItems = lowStockAlert.querySelector('.alert-items');
+        if (!alertItems) {
+            console.error('Alert items container not found');
+            return;
+        }
+
+        alertItems.innerHTML = '';
+        lowStockItems.forEach(item => {
+            const alertItem = document.createElement('div');
+            alertItem.className = 'alert-item';
+            alertItem.innerHTML = `
+                <h4>${item.name}</h4>
+                <p>Category: ${item.category}</p>
+                <p>Current Stock: ${item.stock} units</p>
+                <p>Low Stock Threshold: ${item.lowStockThreshold} units</p>
+            `;
+            alertItems.appendChild(alertItem);
+        });
+    }
+
+    // Get stock status
+    function getStockStatus(stock, threshold) {
+        if (stock === 0) return 'out-of-stock';
+        if (stock <= threshold) return 'low-stock';
+        return 'in-stock';
+    }
+
+    // Filter and sort inventory
+    async function filterAndSortInventory() {
+        try {
+            // Load products from Supabase
+            const products = await window.loadProducts();
+            if (!products || products.length === 0) {
+                renderInventoryTable([]);
+                return;
+            }
+
+            let filteredData = products.map(product => ({
+                id: product.id,
+                name: product.name,
+                category: product.category || 'Uncategorized',
+                price: product.price,
+                stock: product.stock,
+                lowStockThreshold: product.low_stock_threshold || 5
+            }));
+
+            // Apply search filter
+            const searchTerm = searchBox.value.toLowerCase();
+            if (searchTerm) {
+                filteredData = filteredData.filter(item => 
+                    item.name.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Apply stock status filter
+            const stockStatus = stockFilter.value;
+            if (stockStatus !== 'all') {
+                filteredData = filteredData.filter(item => {
+                    const status = getStockStatus(item.stock, item.lowStockThreshold);
+                    return status === stockStatus;
+                });
+            }
+
+            // Apply sorting
+            const sortBy = sortFilter.value;
+            filteredData.sort((a, b) => {
+                switch (sortBy) {
+                    case 'name-asc':
+                        return a.name.localeCompare(b.name);
+                    case 'name-desc':
+                        return b.name.localeCompare(a.name);
+                    case 'stock-asc':
+                        return a.stock - b.stock;
+                    case 'stock-desc':
+                        return b.stock - a.stock;
+                    case 'price-asc':
+                        return a.price - b.price;
+                    case 'price-desc':
+                        return b.price - a.price;
+                    default:
+                        return 0;
+                }
+            });
+
+            renderInventoryTable(filteredData);
+            updateLowStockAlerts(filteredData);
+        } catch (error) {
+            console.error('Error filtering inventory:', error);
+            showNotification('Error filtering inventory data', 'error');
+        }
+    }
+
+    // Event listeners
+    if (searchBox) searchBox.addEventListener('input', filterAndSortInventory);
+    if (stockFilter) stockFilter.addEventListener('change', filterAndSortInventory);
+    if (sortFilter) sortFilter.addEventListener('change', filterAndSortInventory);
+
+    // Initialize when user is authenticated
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            initializeInventory();
+        }
+    });
 
     // Function to show notifications
     function showNotification(message, type = 'info') {

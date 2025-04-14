@@ -615,6 +615,163 @@ tr:hover {
     background-color: #c82333;
 }
 
+/* Inventory Management Styles */
+.inventory-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 15px 10px 35px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+}
+
+.inventory-table {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.inventory-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inventory-table th {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+}
+
+.inventory-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.inventory-table tr:hover {
+    background: #f8f9fa;
+}
+
+.low-stock-alert {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff3cd;
+    border-radius: 8px;
+    border: 1px solid #ffeeba;
+}
+
+.low-stock-alert h3 {
+    color: #856404;
+    margin-bottom: 15px;
+}
+
+.alert-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.alert-item {
+    background: white;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #ffeeba;
+}
+
+.alert-item h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.alert-item p {
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Status indicators */
+.status-in-stock {
+    color: #28a745;
+}
+
+.status-low-stock {
+    color: #ffc107;
+}
+
+.status-out-of-stock {
+    color: #dc3545;
+}
+
+/* Action buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-buttons button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.btn-edit {
+    background: #007bff;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #0056b3;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+
  
 
 
