@@ -1379,12 +1379,8 @@ marquee i {
     background-clip: text;
     background-size: 50px;
     -webkit-background-size: 50px;
-    animation: zezzz;
-    -webkit-animation: zezzz;
-    animation-duration: 5s;
-    -webkit-animation-duration: 5s;
-    animation-iteration-count: infinite;
-    -webkit-animation-iteration-count: infinite;
+    animation: zezzz 5s infinite;
+    -webkit-animation: zezzz 5s infinite;
   }
   @keyframes zezzz {
     0%,
@@ -2780,7 +2776,7 @@ marquee i {
     );
     -webkit-background-clip: text;
     -webkit-background-size: 50px;
-    -webkit-animation: zezzz;
+    -webkit-animation: zezzz 5s infinite;
     -webkit-animation-duration: 5s;
     -webkit-animation-iteration-count: infinite;
   }
