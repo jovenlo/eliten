@@ -1,3 +1,109 @@
+// Mobile Navigation Functions
+function shownavbar() {
+    const sideNav = document.querySelector('.side-nav');
+    const body = document.body;
+    
+    // Show the side navigation
+    sideNav.style.display = 'block';
+    
+    // Add animation class
+    sideNav.classList.add('slide-in');
+    
+    // Prevent body scrolling when menu is open
+    body.style.overflow = 'hidden';
+}
+
+function closenavbar() {
+    const sideNav = document.querySelector('.side-nav');
+    const body = document.body;
+    
+    // Remove animation class
+    sideNav.classList.remove('slide-in');
+    sideNav.classList.add('slide-out');
+    
+    // Allow body scrolling
+    body.style.overflow = '';
+    
+    // Hide the side navigation after animation
+    setTimeout(() => {
+        sideNav.style.display = 'none';
+        sideNav.classList.remove('slide-out');
+    }, 300);
+}
+
+// Add styles for mobile navigation
+const style = document.createElement('style');
+style.textContent = `
+    .side-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background-color: #fff;
+        z-index: 1000;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .side-nav.slide-in {
+        transform: translateX(0);
+    }
+
+    .side-nav.slide-out {
+        transform: translateX(-100%);
+    }
+
+    .side-nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .side-nav-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .side-navbar-links {
+        padding: 1rem;
+    }
+
+    .tog-navbar-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: #333;
+        text-decoration: none;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.3s;
+    }
+
+    .tog-navbar-link:hover {
+        background-color: #f5f5f5;
+    }
+
+    @media (max-width: 768px) {
+        .nav-toggle {
+            display: block;
+        }
+        
+        .nav-links {
+            display: none;
+        }
+    }
+`;
+document.head.appendChild(style);
+
 // Password toggle functionality
 function togglePassword() {
     const passwordInput = document.getElementById('admin-password');
@@ -621,109 +727,3 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
 });
-
-// Mobile Navigation Functions
-function shownavbar() {
-    const sideNav = document.querySelector('.side-nav');
-    const body = document.body;
-    
-    // Show the side navigation
-    sideNav.style.display = 'block';
-    
-    // Add animation class
-    sideNav.classList.add('slide-in');
-    
-    // Prevent body scrolling when menu is open
-    body.style.overflow = 'hidden';
-}
-
-function closenavbar() {
-    const sideNav = document.querySelector('.side-nav');
-    const body = document.body;
-    
-    // Remove animation class
-    sideNav.classList.remove('slide-in');
-    sideNav.classList.add('slide-out');
-    
-    // Allow body scrolling again
-    body.style.overflow = 'auto';
-    
-    // Hide the side navigation after animation
-    setTimeout(() => {
-        sideNav.style.display = 'none';
-        sideNav.classList.remove('slide-out');
-    }, 300);
-}
-
-// Add styles for mobile navigation
-const style = document.createElement('style');
-style.textContent = `
-    .side-nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 250px;
-        height: 100vh;
-        background-color: #fff;
-        z-index: 1000;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out;
-    }
-
-    .side-nav.slide-in {
-        transform: translateX(0);
-    }
-
-    .side-nav.slide-out {
-        transform: translateX(-100%);
-    }
-
-    .side-nav-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
-    }
-
-    .side-nav-header h2 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    .close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    .side-navbar-links {
-        padding: 1rem;
-    }
-
-    .tog-navbar-link {
-        display: block;
-        padding: 0.75rem 1rem;
-        color: #333;
-        text-decoration: none;
-        border-bottom: 1px solid #eee;
-        transition: background-color 0.3s;
-    }
-
-    .tog-navbar-link:hover {
-        background-color: #f5f5f5;
-    }
-
-    @media (max-width: 768px) {
-        .nav-toggle {
-            display: block;
-        }
-        
-        .nav-links {
-            display: none;
-        }
-    }
-`;
-document.head.appendChild(style);

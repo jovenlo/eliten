@@ -6,39 +6,40 @@
     <title>Collection - ELITEN</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="collection.css">
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="logo">
-            <a href="index.html">ELITEN</a>
+        <div class="nav-brand">
+            <a href="index.html">Eliten</a>
         </div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="About.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><a href="login.html">Login</a></li>
-            <li><a href="admin.html">Admin</a></li>
-        </ul>
-        <div class="nav-toggle" onclick="shownavbar()">
-            <i class="fa-solid fa-bars"></i>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="collection.html" class="active">Collection</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-toggle" onclick="shownavbar()">☰</button>
+            
         </div>
     </nav>
 
-    <div class="marq">
-        <div class="side-nav" style="display: none;">
-            <div class="side-nav-header">
-                <h2>ELITEN</h2>
-                <button onclick="closenavbar()" class="close-btn">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="side-navbar-links">
-                <a href="index.html" class="tog-navbar-link">Home</a>
-                <a href="collection.html" class="tog-navbar-link">Collection</a>
-                <a href="About.html" class="tog-navbar-link">About</a>
+    <!-- Mobile Navigation -->
+    <div class="side-nav">
+        
+
+
+        <div class="side-nav-header">
+            <button class="close-btn" onclick="closenavbar()">×</button>
+        </div>
+
+        <div class="side-navbar-links">
+              <a href="index.html" class="tog-navbar-link">Home</a>
+                <a href="about.html" class="tog-navbar-link">About</a>
                 <a href="contact.html" class="tog-navbar-link">Contact</a>
-            </div>
+                
         </div>
     </div>
 
@@ -70,6 +71,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
+    <script src="admin.js"></script>
     <script src="collection.js"></script>
 </body>
 </html> 
