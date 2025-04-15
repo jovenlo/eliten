@@ -2,12 +2,32 @@
 const SUPABASE_URL = 'https://bjcwyyifoklzvtfcxjnz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3d5eWlmb2tsenZ0ZmN4am56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MjM3MTQsImV4cCI6MjA2MDE5OTcxNH0.S3TAzmjSqE9VZkoUEdRMCVivpKmA0DEmN1rH9RqofFQ';
 
-// Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Initialize Supabase client with auth
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+    }
+});
 
 // Product management functions
 async function saveProduct(productData) {
     try {
+        // Check if user is authenticated
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            // If not authenticated, try to sign in with default admin credentials
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+                email: 'admin@eliten.com', // Replace with your admin email
+                password: 'admin123' // Replace with your admin password
+            });
+
+            if (signInError) {
+                throw new Error('Please log in to add products. Error: ' + signInError.message);
+            }
+        }
+
         console.log('Starting product save process...');
         console.log('Product data:', productData);
 
