@@ -7,7 +7,8 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        storage: window.localStorage
     }
 });
 
@@ -16,16 +17,11 @@ async function saveProduct(productData) {
     try {
         // Check if user is authenticated
         const { data: { user }, error: authError } = await supabase.auth.getUser();
+        
         if (authError || !user) {
-            // If not authenticated, try to sign in with default admin credentials
-            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-                email: 'admin@eliten.com', // Replace with your admin email
-                password: 'admin123' // Replace with your admin password
-            });
-
-            if (signInError) {
-                throw new Error('Please log in to add products. Error: ' + signInError.message);
-            }
+            // Show login form or redirect to login page
+            window.location.href = 'loginpage.html';
+            return;
         }
 
         console.log('Starting product save process...');
@@ -45,17 +41,12 @@ async function saveProduct(productData) {
             .from('products')
             .upload(fileName, imageFile, {
                 cacheControl: '3600',
-                upsert: false
+                upsert: false,
+                contentType: imageFile.type
             });
             
         if (uploadError) {
             console.error('Storage upload error:', uploadError);
-            if (uploadError.message.includes('Bucket not found')) {
-                throw new Error('Storage bucket "products" not found. Please create it in your Supabase dashboard.');
-            }
-            if (uploadError.message.includes('row-level security policy')) {
-                throw new Error('Authentication error. Please make sure you are logged in and have proper permissions.');
-            }
             throw new Error(`Failed to upload image: ${uploadError.message}`);
         }
         
@@ -66,8 +57,10 @@ async function saveProduct(productData) {
             .from('products')
             .getPublicUrl(fileName);
             
-        console.log('Image public URL:', publicUrl);
-        
+        // Ensure the URL is public and accessible
+        const cleanPublicUrl = publicUrl.split('?')[0];
+        console.log('Image public URL:', cleanPublicUrl);
+
         // Save product data to Supabase
         console.log('Saving product to database...');
         const { data, error } = await supabase
@@ -78,7 +71,7 @@ async function saveProduct(productData) {
                     price: productData.price,
                     stock: productData.stock,
                     description: productData.description,
-                    image_url: publicUrl,
+                    image_url: cleanPublicUrl,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 }
@@ -110,9 +103,24 @@ async function loadProducts() {
             console.error('Error loading products:', error);
             throw error;
         }
+
+        // Process image URLs to ensure they're accessible
+        const processedData = data.map(product => {
+            if (product.image_url) {
+                // If the URL is from Supabase storage, ensure it's public
+                if (product.image_url.includes('supabase.co')) {
+                    // Remove any query parameters that might cause issues
+                    product.image_url = product.image_url.split('?')[0];
+                }
+            } else {
+                // Use a fallback image if no image URL is available
+                product.image_url = 'https://placehold.co/600x400?text=No+Image';
+            }
+            return product;
+        });
         
-        console.log('Products loaded successfully:', data);
-        return data;
+        console.log('Products loaded successfully:', processedData);
+        return processedData;
     } catch (error) {
         console.error('Error in loadProducts:', error);
         throw error;

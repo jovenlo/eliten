@@ -4,140 +4,70 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
+        <title>Sign Up - Eliten</title>
+        <meta name="description" content="Create your Eliten account">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="loginstyle.css">
-        <script type="module" src="loginpage.js" defer></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <script type="module" src="loginmain.js" defer></script>
     </head>
     <body>
-        <nav>
-            <video src="production_id.mp4" autoplay muted loop></video>
-            <h1 class="name">E L I T E N</h1>
-            <div class="navbar-links">
-                <p class="navbar-link"><a href="index.html">Home</a></p>
-                <p class="navbar-link"><a href="collection.html">Collection</a></p>
-                <p class="navbar-link"><a href="contact.html">Contact</a></p>
-                <p class="navbar-link"><a href="About.html">About</a></p>
-            </div>  
-            <div class="nav-toggle" onclick="shownavbar()">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-        </nav>
-
-        <div class="marq">
-            <marquee behavior="solid" direction="straigth"><i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer, Some limits hurry up its too late</i></marquee>
-            <div class="side-nav">
-                <p>
-                    <i class="fa-solid fa-xmark" onclick="closenavbar()"></i>
-                </p>
-                <div class="side-navbar-links">
-                    <p class="tog-navbar-link"><a href="index.html" class="texted0">Home</a></p>
-                    <p class="tog-navbar-link"><a href="collection.html" class="texted0">Collection</a></p>
-                    <p class="tog-navbar-link"><a href="contact.html" class="texted0">Contact</a></p>
-                    <p class="tog-navbar-link"><a href="About.html" class="texted0">About</a></p>
-                </div>
-            </div>
+        <div class="card">
+            <p class="title">Sign Up</p>
+            <form>
+              <div class="field">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 500 500"
+                  class="input-icon"
+                 >
+                  <path
+                    d="M207.8 20.73c-93.45 18.32-168.7 93.66-187 187.1c-27.64 140.9 68.65 266.2 199.1 285.1c19.01 2.888 36.17-12.26 36.17-31.49l.0001-.6631c0-15.74-11.44-28.88-26.84-31.24c-84.35-12.98-149.2-86.13-149.2-174.2c0-102.9 88.61-185.5 193.4-175.4c91.54 8.869 158.6 91.25 158.6 183.2l0 16.16c0 22.09-17.94 40.05-40 40.05s-40.01-17.96-40.01-40.05v-120.1c0-8.847-7.161-16.02-16.01-16.02l-31.98 .0036c-7.299 0-13.2 4.992-15.12 11.68c-24.85-12.15-54.24-16.38-86.06-5.106c-38.75 13.73-68.12 48.91-73.72 89.64c-9.483 69.01 43.81 128 110.9 128c26.44 0 50.43-9.544 69.59-24.88c24 31.3 65.23 48.69 109.4 37.49C465.2 369.3 496 324.1 495.1 277.2V256.3C495.1 107.1 361.2-9.332 207.8 20.73zM239.1 304.3c-26.47 0-48-21.56-48-48.05s21.53-48.05 48-48.05s48 21.56 48 48.05S266.5 304.3 239.1 304.3z"
+                  ></path>
+                </svg>
+                <input
+                  type="email"
+                  name="signemail"
+                  class="input-field"
+                  placeholder="Email"
+                  id="signemail"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="field">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 500 500"
+                  class="input-icon"
+                >
+                  <path
+                    d="M80 192V144C80 64.47 144.5 0 224 0C303.5 0 368 64.47 368 144V192H384C419.3 192 448 220.7 448 256V448C448 483.3 419.3 512 384 512H64C28.65 512 0 483.3 0 448V256C0 220.7 28.65 192 64 192H80zM144 192H304V144C304 99.82 268.2 64 224 64C179.8 64 144 99.82 144 144V192z"
+                  ></path>
+                </svg>
+                <input
+                  type="password"
+                  name="signpass"
+                  class="input-field"
+                  placeholder="Password"
+                  id="signpass"
+                  autocomplete="off"
+                />
+                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+              </div>
+              <button type="submit" id="submit" class="btn">Sign Up</button>
+              <a href="loginpage.html"> <button type="button" class="btn" id="login">Login</button></a>
+            </form>
         </div>
-
-       <center>
-        <form class="modern-form">
-            <div class="form-title">Sign Up</div>
-          
-            <div class="form-body">
-              <div class="input-group">
-                <div class="input-wrapper">
-                  <svg fill="none" viewBox="0 0 24 24" class="input-icon">
-                    <circle
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      r="4"
-                      cy="8"
-                      cx="12"
-                    ></circle>
-                    <path
-                      stroke-linecap="round"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      d="M5 20C5 17.2386 8.13401 15 12 15C15.866 15 19 17.2386 19 20"
-                    ></path>
-                  </svg>
-                  <input
-                    required=""
-                    placeholder="Username"
-                    class="form-input"
-                    type="text"
-                  />
-                </div>
-              </div>
-          
-              <div class="input-group">
-                <div class="input-wrapper">
-                  <svg fill="none" viewBox="0 0 24 24" class="input-icon">
-                    <path
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      d="M3 8L10.8906 13.2604C11.5624 13.7083 12.4376 13.7083 13.1094 13.2604L21 8M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z"
-                    ></path>
-                  </svg>
-                  <input
-                    required
-                    placeholder="Email"
-                    id="email"
-                    class="form-input"
-                    type="email"
-                  />
-                </div>
-              </div>
-          
-              <div class="input-group">
-                <div class="input-wrapper">
-                  <svg fill="none" viewBox="0 0 24 24" class="input-icon">
-                    <path
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      d="M12 10V14M8 6H16C17.1046 6 18 6.89543 18 8V16C18 17.1046 17.1046 18 16 18H8C6.89543 18 6 17.1046 6 16V8C6 6.89543 6.89543 6 8 6Z"
-                    ></path>
-                  </svg>
-                  <input
-                    required
-                    placeholder="Password"
-                    class="form-input"
-                    id="password"
-                    type="password"
-                  />
-                  <button class="password-toggle" type="button">
-                    <svg fill="none" viewBox="0 0 24 24" class="eye-icon">
-                      <path
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z"
-                      ></path>
-                      <circle
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        r="3"
-                        cy="12"
-                        cx="12"
-                      ></circle>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          
-            <button class="submit-button" type="submit" id="submit">
-              <span class="button-text">Create Account</span>
-              <div class="button-glow"></div>
-            </button>
-          
-            <div class="form-footer">
-              <a class="login-link" href="loginpage.html">
-                Already have an account? <span>Login</span>
-              </a>
-            </div>
-        </form>
-       </center>
-        
+        <script>
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#signpass');
+            
+            togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        </script>
     </body>
 </html>

@@ -1,48 +1,16 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
+        <title>Login - Eliten</title>
+        <meta name="description" content="Login to your Eliten account">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="loginstyle.css">
-        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <script type="module" src="loginmain.js" defer></script>
     </head>
     <body>
-        <nav>
-            <video src="production_id.mp4" autoplay muted loop></video>
-            <h1 class="name">E L I T E N</h1>
-            <div class="navbar-links">
-                <p class="navbar-link"><a href="index.html">Home</a></p>
-                <p class="navbar-link"><a href="collection.html">Collection</a></p>
-                <p class="navbar-link"><a href="contact.html">Contact</a></p>
-                <p class="navbar-link"><a href="About.html">About</a></p>
-            </div>  
-            <div class="nav-toggle" onclick="shownavbar()">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-        </nav>
-
-        <div class="marq">
-            <marquee behavior="solid" direction="straigth"><i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer, Some limits hurry up its too late</i></marquee>
-            <div class="side-nav">
-                <p>
-                    <i class="fa-solid fa-xmark" onclick="closenavbar()"></i>
-                </p>
-                <div class="side-navbar-links">
-                    <p class="tog-navbar-link"><a href="index.html" class="texted0">Home</a></p>
-                    <p class="tog-navbar-link"><a href="collection.html" class="texted0">Collection</a></p>
-                    <p class="tog-navbar-link"><a href="contact.html" class="texted0">Contact</a></p>
-                    <p class="tog-navbar-link"><a href="About.html" class="texted0">About</a></p>
-                </div>
-            </div>
-        </div>
-
-        <center>
-        
         <div class="card">
             <p class="title">Login</p>
             <form>
@@ -83,13 +51,22 @@
                   id="logpass"
                   autocomplete="off"
                 />
+                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
               </div>
               <button type="submit" id="submit" class="btn">Login</button>
               <a href="signuppage.html"> <button type="button" class="btn"  id="signup">Sign Up</button></a>
-              
             </form>
         </div>
-      </center>
-
+        <script>
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#logpass');
+            
+            togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        </script>
     </body>
 </html>
