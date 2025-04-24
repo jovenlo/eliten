@@ -313,4 +313,17 @@
     .remove-btn {
         margin-top: 1rem;
     }
+
+    .checkout-btn, .continue-shopping {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .summary-details div {
+        font-size: 0.9rem;
+    }
+
+    .total {
+        font-size: 1.1rem;
+    }
 } 

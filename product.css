@@ -679,6 +679,7 @@
 
 .product-buttons .buy-now-btn:hover {
     background: #45a049;
+<<<<<<< HEAD
 }
 
 .product-image {
@@ -758,4 +759,6 @@
 
 .buttonui.saved .svg {
     stroke: #ff4444;
+=======
+>>>>>>> a281af502ee81713390113a53e2d5d8b0561f0cd
 } 
