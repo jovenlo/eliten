@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection - ELITEN</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="collection.css">
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">Eliten</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="collection.html" class="active">Collection</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-toggle" onclick="shownavbar()">☰</button>
+            
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="side-nav">
+        
+
+
+        <div class="side-nav-header">
+            <button class="close-btn" onclick="closenavbar()">×</button>
+        </div>
+
+        <div class="side-navbar-links">
+              <a href="index.html" class="tog-navbar-link">Home</a>
+                <a href="about.html" class="tog-navbar-link">About</a>
+                <a href="contact.html" class="tog-navbar-link">Contact</a>
+                
+        </div>
+    </div>
+
+    <div class="collection">
+        <div class="texted3">
+            <h1 style="margin-left: 0%;">Collections</h1>
+        </div>
+
+        <button class="button-cart" onclick="window.location.href='cart.html'">
+            <svg viewBox="0 0 16 16" class="bi bi-cart-check" height="24" width="24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
+                <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"></path>
+                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+            </svg>
+        </button>
+
+        <div class="searchbar">
+            <input placeholder="Search" id="searchInput" onkeyup="searchProducts()">
+        </div>
+
+        <div class="texted3">
+            <h1>Select your fashion</h1>
+        </div>
+
+        <div class="products-grid" id="products-container">
+            <!-- Products will be dynamically added here -->
+            <div class="card">
+                <div class="content">
+                    <div class="back">
+                        <div class="back-content">
+                            <svg stroke="#ffffff" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 50 50" height="50px" width="50px" fill="#ffffff">
+                                <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                            </svg>
+                            <strong>Click me</strong>
+                        </div>
+                    </div>
+                    <div class="front">
+                        <div class="img">
+                            <img src="flipimg5.png" alt="Italian stone jewelry" style="width: 190px;">
+                            <button class="save-product-btn" onclick="saveProduct(this, {
+                                id: 'product1',
+                                name: 'Italian stone jewelry',
+                                price: '$299.99',
+                                image: 'flipimg5.png'
+                            })">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="front-content">
+                            <small class="badge">50%</small>
+                            <div class="description">
+                                <div class="title">
+                                    <p class="title"><strong>Italian stone</strong></p>
+                                    <svg fill-rule="nonzero" height="15px" width="15px" viewbox="0,0,256,256" xmlns="http://www.w3.org/2000/svg">
+                                        <g style="mix-blend-mode: normal" fill="#20c997">
+                                            <g transform="scale(8,8)">
+                                                <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <p class="card-footer">where it | enjoy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="admin.js"></script>
+    <script src="collection.js"></script>
+</body>
+</html> 

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELITEN - Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/f6a9740089.js" crossorigin="anonymous"></script>
+    <script type="module" src="profile.js" defer></script>
+</head>
+<body>
+    <nav>
+        <video src="production_id.mp4" autoplay muted loop playsinline aria-label="Background video">
+            <source src="production_id.mp4" type="video/mp4">
+        </video>
+        <h1 class="name"> E L I T E N </h1>
+        <div class="navbar-links">
+            <p class="navbar-link"><a href="collection.html" aria-label="View our collection"> Collection</a></p>
+            <p class="navbar-link"><a href="contact.html" aria-label="Contact us"> Contact</a></p>
+            <p class="navbar-link"><a href="About.html" aria-label="About us"> About </a></p>
+            <p class="navbar-link"><a href="index.html" aria-label="Home"> Home </a></p>
+        </div>
+        <button class="nav-toggle" onclick="shownavbar()" aria-label="Toggle navigation menu">
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+    </nav>
+
+    <div class="marq">
+        <div class="side-nav">
+            <button onclick="closenavbar()" aria-label="Close navigation menu">
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+
+            <div class="side-navbar-links">
+                <p class="tog-navbar-link"><a href="collection.html" class="texted0" aria-label="View our collection"> Collection </a></p>
+                <p class="tog-navbar-link"><a href="contact.html" class="texted0" aria-label="Contact us">Contact </a></p>
+                <p class="tog-navbar-link"><a href="About.html" class="texted0" aria-label="About us"> About </a></p>
+                <p class="tog-navbar-link"><a href="index.html" class="texted0" aria-label="Home"> Home </a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <img src="default-avatar.png" alt="Profile Avatar" id="profileAvatar">
+                <button class="change-avatar-btn">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="profile-info">
+                <h2 id="userName">User Name</h2>
+                <p id="userEmail">user@email.com</p>
+                <button class="edit-profile-btn">Edit Profile</button>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-section">
+                <h3>Personal Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Full Name</label>
+                        <p id="fullName">John Doe</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Phone</label>
+                        <p id="phone">+1234567890</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Address</label>
+                        <p id="address">123 Street, City, Country</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Order History</h3>
+                <div class="order-history" id="orderHistory">
+                    <!-- Order history will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Modal -->
+        <div class="modal" id="editProfileModal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Edit Profile</h2>
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" id="editFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Phone Number</label>
+                        <input type="tel" id="editPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="editAddress">Address</label>
+                        <textarea id="editAddress"></textarea>
+                    </div>
+                    <button type="submit" class="save-profile-btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://kit.fontawesome.com/f6a9740089.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html> 

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EITEN - Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase Auth SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Custom Scripts -->
+    <script src="supabase.js"></script>
+    <script src="admin.js"></script>
+</head>
+<body>
+    <!-- Admin Login Section -->
+    <div class="admin-login-container">
+        <div class="admin-login" id="admin-login-section">
+            <div class="login-header">
+                <h2>Admin Login</h2>
+                <p>Welcome back! Please login to your account.</p>
+            </div>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-username">Email</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="admin-username" placeholder="Enter your email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="admin-password" placeholder="Enter your password" required>
+                        <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
+                    </div>
+                </div>
+                <div class="form-group remember-me">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">Remember me</label>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+            <p id="login-error" class="error-message">Invalid username or password</p>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">ELITEN</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="collection.html">Collection</a></li>
+            <li><a href="About.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="nav-toggle" onclick="shownavbar()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
+
+    <div class="marq">
+        <div class="side-nav" style="display: none;">
+            <div class="side-nav-header">
+                <h2>ELITEN</h2>
+                <button onclick="closenavbar()" class="close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="side-navbar-links">
+                <a href="index.html" class="tog-navbar-link">Home</a>
+                <a href="collection.html" class="tog-navbar-link">Collection</a>
+                <a href="About.html" class="tog-navbar-link">About</a>
+                <a href="contact.html" class="tog-navbar-link">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-container" id="admin-dashboard" style="display: none;">
+        <div class="admin-sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul class="admin-menu">
+                <li class="active" data-tab="products">Products</li>
+                <li data-tab="analytics">Analytics</li>
+                <li data-tab="inventory">Inventory</li>
+            </ul>
+        </div>
+
+        <div class="admin-content">
+            <!-- Products Management Section -->
+            <div class="admin-section" id="products-section">
+                <h2>Add New Product</h2>
+                <form id="product-form" class="product-form">
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Price</label>
+                        <input type="number" id="product-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-stock">Stock Quantity</label>
+                        <input type="number" id="product-stock" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-image">Product Image</label>
+                        <input type="file" id="product-image" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Add Product</button>
+                </form>
+
+                <div class="products-list">
+                    <h2>Existing Products</h2>
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products will be dynamically added here -->
+                        <div class="product-card">
+                            <div class="product-actions">
+                                <button class="edit-btn">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="admin-section" id="analytics-section" style="display: none;">
+                <h2>Sales Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Total Sales</h3>
+                        <p id="total-sales">₹0</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Products Sold</h3>
+                        <p id="total-products-sold">0</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Average Order Value</h3>
+                        <p id="avg-order-value">₹0</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sales-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Inventory Section -->
+            <div class="admin-section" id="inventory-section" style="display: none;">
+                <h2>Inventory Management</h2>
+                
+                <!-- Inventory Controls -->
+                <div class="inventory-controls">
+                    <div class="search-box">
+                        <input type="text" id="inventory-search" placeholder="Search products...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="stock-filter">
+                            <option value="all">All Stock</option>
+                            <option value="in-stock">In Stock</option>
+                            <option value="low-stock">Low Stock</option>
+                            <option value="out-of-stock">Out of Stock</option>
+                        </select>
+                        <select id="sort-by">
+                            <option value="name">Sort by Name</option>
+                            <option value="stock">Sort by Stock</option>
+                            <option value="sold">Sort by Sold</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Inventory Table -->
+                <div class="inventory-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Current Stock</th>
+                                <th>Low Stock Alert</th>
+                                <th>Sold</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-body">
+                            <!-- Inventory items will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Low Stock Alert -->
+                <div class="low-stock-alert" id="low-stock-alert">
+                    <h3>Low Stock Products</h3>
+                    <div class="alert-items" id="low-stock-items">
+                        <!-- Low stock items will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

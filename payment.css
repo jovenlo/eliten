@@ -1,0 +1,397 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap');
+
+.payment-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    background-color: antiquewhite;
+    font-family: 'Playfair Display', serif;
+}
+
+.payment-container h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+    font-size: 2rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.payment-methods, .order-details {
+    background: bisque;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.payment-methods h2, .order-details h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.5rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.payment-option {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.payment-option:hover {
+    border-color: #333;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.payment-option.selected {
+    border-color: #333;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.payment-option input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.payment-option label {
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    font-family: 'Playfair Display', serif;
+}
+
+.payment-form {
+    margin-top: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #333;
+}
+
+.order-items {
+    margin: 1rem 0;
+}
+
+.order-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.order-total {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+}
+
+.order-total div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.total {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+}
+
+.pay-now {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1rem;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.pay-now:hover {
+    background-color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .payment-container {
+        padding: 0 2rem;
+    }
+
+    .order-item {
+        grid-template-columns: 60px 1fr auto;
+    }
+
+    .order-item img {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-methods, .order-details {
+        padding: 1.5rem;
+    }
+
+    .payment-methods h2, .order-details h2 {
+        font-size: 1.3rem;
+    }
+
+    .payment-option {
+        padding: 0.8rem;
+    }
+
+    .form-group input {
+        padding: 0.7rem;
+    }
+
+    .order-item {
+        grid-template-columns: 50px 1fr auto;
+        gap: 0.5rem;
+    }
+
+    .order-item img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .payment-container {
+        padding: 0 1rem;
+    }
+
+    .payment-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .payment-methods, .order-details {
+        padding: 1rem;
+    }
+
+    .payment-methods h2, .order-details h2 {
+        font-size: 1.2rem;
+    }
+
+    .payment-option label {
+        font-size: 0.9rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .order-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .order-item img {
+        width: 100%;
+        height: auto;
+        max-height: 150px;
+        margin: 0 auto;
+    }
+
+    .item-details {
+        margin: 1rem 0;
+    }
+
+    .order-total div {
+        font-size: 0.9rem;
+    }
+
+    .total {
+        font-size: 1.1rem;
+    }
+
+    .pay-now {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Payment Status Page Styles */
+.payment-status-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: antiquewhite;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.payment-status-content {
+    text-align: center;
+}
+
+.success-icon, .error-icon {
+    font-size: 4rem;
+    margin: 1rem 0;
+}
+
+.success-icon {
+    color: #4CAF50;
+}
+
+.error-icon {
+    color: #f44336;
+}
+
+.payment-status-content h2 {
+    margin: 1rem 0;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+.payment-status-content p {
+    margin: 1rem 0;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.order-details {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.order-details h3 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.order-details p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.error-details {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 4px;
+    color: #f44336;
+}
+
+.payment-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.continue-shopping,
+.view-order,
+.retry-payment {
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.continue-shopping {
+    background: #333;
+    color: white;
+}
+
+.view-order {
+    background: #4CAF50;
+    color: white;
+}
+
+.retry-payment {
+    background: #f44336;
+    color: white;
+}
+
+.continue-shopping:hover {
+    background: #555;
+}
+
+.view-order:hover {
+    background: #45a049;
+}
+
+.retry-payment:hover {
+    background: #da190b;
+}
+
+@media (max-width: 768px) {
+    .payment-status-container {
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    .payment-actions {
+        flex-direction: column;
+    }
+
+    .continue-shopping,
+    .view-order,
+    .retry-payment {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.price, .amount, .total-amount {
+    font-family: 'Noto Sans', 'Playfair Display', serif;
+} 

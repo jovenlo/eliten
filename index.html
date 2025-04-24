@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="ELITEN - Premium Jewelry Collection">
+        <title>EITEN</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/f6a9740089.js" crossorigin="anonymous"></script>
+        <script type="module" src="loginmain.js" defer></script>
+        <script src="welcome.js" defer></script>
+    </head>
+    <body>
+        <div id="loader-box">
+            <div class="truckWrapper">
+                <div class="truckBody">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 198 93" class="trucksvg" role="img" aria-label="Loading truck animation">
+                        <path
+                            stroke-width="3"
+                            stroke="#282828"
+                            fill="#F83D3D"
+                            d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z"></path>
+                        <path
+                            stroke-width="3"
+                            stroke="#282828"
+                            fill="#7D7C7C"
+                            d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z"></path>
+                        <path
+                            stroke-width="2"
+                            stroke="#282828"
+                            fill="#282828"
+                            d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z"></path>
+                        <rect
+                            stroke-width="2"
+                            stroke="#282828"
+                            fill="#FFFCAB"
+                            rx="1"
+                            height="7"
+                            width="5"
+                            y="63"
+                            x="187"></rect>
+                        <rect
+                            stroke-width="2"
+                            stroke="#282828"
+                            fill="#282828"
+                            rx="1"
+                            height="11"
+                            width="4"
+                            y="81"
+                            x="193"></rect>
+                        <rect
+                            stroke-width="3"
+                            stroke="#282828"
+                            fill="#DFDFDF"
+                            rx="2.5"
+                            height="90"
+                            width="121"
+                            y="1.5"
+                            x="6.5"></rect>
+                        <rect
+                            stroke-width="2"
+                            stroke="#282828"
+                            fill="#DFDFDF"
+                            rx="2"
+                            height="4"
+                            width="6"
+                            y="84"
+                            x="1"></rect>
+                    </svg>
+                </div>
+                <div class="truckTires">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 30 30" class="tiresvg" role="img" aria-label="Truck tire">
+                        <circle
+                            stroke-width="3"
+                            stroke="#282828"
+                            fill="#282828"
+                            r="13.5"
+                            cy="15"
+                            cx="15"></circle>
+                        <circle fill="#DFDFDF" r="7" cy="15"
+                            cx="15"></circle>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 30 30" class="tiresvg" role="img" aria-label="Truck tire">
+                        <circle
+                            stroke-width="3"
+                            stroke="#282828"
+                            fill="#282828"
+                            r="13.5"
+                            cy="15"
+                            cx="15"></circle>
+                        <circle fill="#DFDFDF" r="7" cy="15"
+                            cx="15"></circle>
+                    </svg>
+                </div>
+                <div class="road"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 453.459 453.459" class="lampPost" role="img" aria-label="Lamp post">
+                    <path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993
+                        c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514
+                        c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16
+                        c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914
+                        h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75
+                        v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795
+                        V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z
+                        M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017
+                        h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path>
+                </svg>
+            </div>
+        </div>  
+        
+    
+
+        <nav>
+            <video src="production_id.mp4" autoplay muted loop playsinline aria-label="Background video">
+                <source src="production_id.mp4" type="video/mp4">
+            </video>
+            <div class="profile-icon" id="profileIcon" style="display: none;">
+                <a href="profile.html" aria-label="Go to profile page">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+            </div>
+            <h1 class="name"> E L I T E N </h1>
+            <div class="navbar-links">
+                <p class="navbar-link"><a href="collection.html" aria-label="View our collection"> Collection</a></p>
+                <p class="navbar-link"><a href="contact.html" aria-label="Contact us"> Contact</a></p>
+                <p class="navbar-link"><a href="About.html" aria-label="About us"> About </a></p>
+                <p class="navbar-link"><a href="loginpage.html" aria-label="Login to your account"> Login </a></p>
+                <p class="navbar-link"><a href="admin.html" aria-label="Admin panel"> Admin </a></p>
+            </div>
+            <button class="nav-toggle" onclick="shownavbar()" aria-label="Toggle navigation menu">
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            </button>
+
+        </nav>
+
+        <div class="marq">
+            <marquee behavior="scroll" direction="left" aria-label="Special offers">
+                <i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer ,Some limtes hurry up its too late</i>
+            </marquee>
+            <div class="side-nav">
+                <button onclick="closenavbar()" aria-label="Close navigation menu">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+
+                <div class="side-navbar-links">
+                    <p class="tog-navbar-link"><a href="collection.html" class="texted0" aria-label="View our collection"> Collection </a></p>
+                    <p class="tog-navbar-link"><a href="contact.html" class="texted0" aria-label="Contact us">Contact </a></p>
+                    <p class="tog-navbar-link"><a href="About.html" class="texted0" aria-label="About us"> About </a></p>
+                    <p class="tog-navbar-link"><a href="admin.html" class="texted0" aria-label="About us"> admin </a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="product">
+
+            <div class="searchbar">
+                <input type="search" placeholder="Search" aria-label="Search products">
+
+            </div>
+
+            <div class="box-item">
+                <div class="box">
+                    <img
+                        src="https://plus.unsplash.com/premium_photo-1661645473770-90d750452fa0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8amV3ZWxyeXxlbnwwfHwwfHx8MA%3D%3D"
+                        alt="Jewelry item" style="border-radius: 7%;">
+                </div>
+                <div class="texted">
+                    <h2>There are many ldeas</h2>
+                </div>
+                <div class="box2">
+                    <img
+                        src="https://plus.unsplash.com/premium_photo-1681276168422-ebd2d7e95340?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nzd8fGpld2VscnklMjBtb2RlbHxlbnwwfHwwfHx8MA%3D%3D"
+                        alt="Jewelry model" style="border-radius: 7%;">
+                </div>
+
+            </div>
+
+            <!-- From Uiverse.io by 3bdel3ziz-T -->
+            <div class="black-friday-component">
+                <div class="coupon">
+                    <div class="box"><span>37%</span><span>OFF</span></div>
+
+                    <div class="content">
+                        <h3>
+                            <span>B</span>
+                            <span>L</span>
+                            <span>A</span>
+                            <span>C</span>
+                            <span class="end">K </span>
+                            <span>F</span>
+                            <span>R</span>
+                            <span>I</span>
+                            <span>D</span>
+                            <span>A</span>
+                            <span>Y</span>
+                            <span>🎉</span>
+                        </h3>
+                        <p>
+                            The black friday is getting back with the deal
+                            of the year<strong>37% OFF</strong>
+                            on all products
+                            <a href="#">click here</a>
+                            to get the discount.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="texted1">
+
+                <h1>See your fashion and buy it</h1>
+            </div>
+
+            <div class="jewllo-img">
+                <div class="jewllo-path">
+                    <img src="jewllo.jpg" alt="Necklace">
+                    <div class="overlay">
+                        <h3>Neckles</h3>
+                    </div>
+                </div>
+                <div class="jewllo-path">
+                    <img src="jewllo1.jpg" alt="Ring">
+                    <div class="overlay">
+                        <h3>Ring</h3>
+                    </div>
+                </div>
+                <div class="jewllo-path">
+                    <img src="jewllo2.jpg" alt="Bracelet">
+                    <div class="overlay">
+                        <h3>Braslet</h3>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="item-text">
+                <h2>ELITEN provids discount for time in a month !hurry up
+                    gap
+                    your jewelles </h2>
+            </div>
+
+            <div class="handjew">
+                <video src="handjewell.mp4" autoplay muted loop playsinline aria-label="Hand jewelry showcase"></video>
+            </div>
+
+            <!-- From Uiverse.io by JesusRafaelNavaCruz --> 
+            <div class="uicontainer">
+                <div class="uicard">
+                    <p class="uititle">
+                        Elegent
+                    </p>
+                </div>
+                <div class="uicard">
+                    <p class="uititle">
+                        Dazzling
+                    </p>
+                </div>
+                <div class="uicard">
+                    <p class="uititle">
+                        Ethereal
+                    </p>
+                </div>
+                
+                <div class="uicard">
+                    <p class="uititle">
+                        Vibrant
+                    </p>
+                </div>
+                
+                <div class="uicard">
+                    <p class="uititle">
+                        Blooming
+                    </p>
+                </div>
+                
+                <div class="uicard">
+                    <p class="uititle">
+                        Glamorous
+                    </p>
+                </div>
+                
+                <div class="uicard">
+                    <p class="uititle">
+                        Attractive
+                    </p>
+                </div>
+                
+                <div class="uicard">
+                    <p class="uititle">
+                        Radiant
+                    </p>
+                </div>
+
+                <div class="uicard">
+                    <p class="uititle">
+                        Flawless
+                    </p>
+                </div>
+
+                <div class="uicard">
+                    <p class="uititle">
+                        Glowing
+                    </p>
+                </div>
+
+                <div class="uicard">
+                    <p class="uititle">
+                        Majestic
+                    </p>
+                </div>
+
+                
+            </div>
+
+
+
+
+
+
+
+
+
+            <!-- From Uiverse.io by ElSombrero2 -->
+            <div class="card-box">
+                <!-- Card 1 -->
+                <div class="card">
+                    <div class="content">
+                        <div class="back">
+                            <div class="back-content">
+                                <svg stroke="#ffffff" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 50 50" height="50px" width="50px" fill="#ffffff">
+                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                </svg>
+                                <strong>Click me</strong>
+                            </div>
+                        </div>
+                        <div class="front">
+                            <div class="img">
+                                <img src="flipimg5.png" alt="Italian stone jewelry" style="width: 190px;">
+                            </div>
+                            <div class="front-content">
+                                <small class="badge">50%</small>
+                                <div class="description">
+                                    <div class="title">
+                                        <p class="title"><strong>Italian stone</strong></p>
+                                        <svg fill-rule="nonzero" height="15px" width="15px" viewbox="0,0,256,256" xmlns="http://www.w3.org/2000/svg">
+                                            <g style="mix-blend-mode: normal" fill="#20c997">
+                                                <g transform="scale(8,8)">
+                                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <p class="card-footer">where it | enjoy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card">
+                    <div class="content">
+                        <div class="back">
+                            <div class="back-content">
+                                <svg stroke="#ffffff" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 50 50" height="50px" width="50px" fill="#ffffff">
+                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                </svg>
+                                <strong>Click me</strong>
+                            </div>
+                        </div>
+                        <div class="front">
+                            <div class="img">
+                                <img src="filppimg2.png" alt="Italian stone jewelry" style="width: 190px;">
+                            </div>
+                            <div class="front-content">
+                                <small class="badge">50%</small>
+                                <div class="description">
+                                    <div class="title">
+                                        <p class="title"><strong>Italian stone</strong></p>
+                                        <svg fill-rule="nonzero" height="15px" width="15px" viewbox="0,0,256,256" xmlns="http://www.w3.org/2000/svg">
+                                            <g style="mix-blend-mode: normal" fill="#20c997">
+                                                <g transform="scale(8,8)">
+                                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <p class="card-footer">where it | enjoy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card">
+                    <div class="content">
+                        <div class="back">
+                            <div class="back-content">
+                                <svg stroke="#ffffff" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 50 50" height="50px" width="50px" fill="#ffffff">
+                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                </svg>
+                                <strong>Click me</strong>
+                            </div>
+                        </div>
+                        <div class="front">
+                            <div class="img">
+                                <img src="flipimg3.png" alt="Italian stone jewelry" style="width: 190px;">
+                            </div>
+                            <div class="front-content">
+                                <small class="badge">50%</small>
+                                <div class="description">
+                                    <div class="title">
+                                        <p class="title"><strong>Italian stone</strong></p>
+                                        <svg fill-rule="nonzero" height="15px" width="15px" viewbox="0,0,256,256" xmlns="http://www.w3.org/2000/svg">
+                                            <g style="mix-blend-mode: normal" fill="#20c997">
+                                                <g transform="scale(8,8)">
+                                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <p class="card-footer">where it | enjoy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card">
+                    <div class="content">
+                        <div class="back">
+                            <div class="back-content">
+                                <svg stroke="#ffffff" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 50 50" height="50px" width="50px" fill="#ffffff">
+                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                </svg>
+                                <strong>Click me</strong>
+                            </div>
+                        </div>
+                        <div class="front">
+                            <div class="img">
+                                <img src="flipimg4.png" alt="Italian stone jewelry" style="width: 190px;">
+                            </div>
+                            <div class="front-content">
+                                <small class="badge">50%</small>
+                                <div class="description">
+                                    <div class="title">
+                                        <p class="title"><strong>Italian stone</strong></p>
+                                        <svg fill-rule="nonzero" height="15px" width="15px" viewbox="0,0,256,256" xmlns="http://www.w3.org/2000/svg">
+                                            <g style="mix-blend-mode: normal" fill="#20c997">
+                                                <g transform="scale(8,8)">
+                                                    <path d="M25,27l-9,-6.75l-9,6.75v-23h18z"/>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <p class="card-footer">where it | enjoy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="service-box">
+            <div class="service-items">
+                <i
+                    class="fa-regular fa-handshake"></i>
+                <h4>Customer
+                    Satisfaction
+                    Gurantee</h4>
+                <p> Customer good
+                    rateings and
+                    Satisfaction with
+                    happie face
+                    no any negative
+                    comments and
+                    cetifecated
+                    products</p>
+            </div>
+
+            <div class="service-items">
+                <i
+                    class="fa-solid fa-truck"></i>
+                <h4>Delivery time</h4>
+                <p> Delivery time take a
+                    every single product
+                    with bussiness
+                    days are weekend
+                    days sure has soon a
+                    possiable will
+                    reach</p>
+            </div>
+
+            <div class="service-items">
+                <i
+                    class="fa-regular fa-star"></i>
+                <h4>product quality</h4>
+                <p>Product quality is
+                    very good there is
+                    no issue many of
+                    them prchaseing from
+                    the store so don't
+                    worry about
+                    it</p>
+            </div>
+        </div>
+
+             <!-- From Uiverse.io by devkatyall --> 
+                <div class="shine">ELITEN</div>
+
+
+            <script>
+             (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="pZBREgLp57lyCUt8QOG4y";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+            </script>
+
+        <div class="marq1">
+            <marquee><span> E L I T E N
+                </span> Inspired from
+                gorys of
+                heven</marquee>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://kit.fontawesome.com/f6a9740089.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="main.js"></script>
+
+    <script type="text/javascript">
+        var loader = document.getElementById("loader-box");
+        window.addEventListener("load", function() {
+            loader.style.display = "none";
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="supabase.js"></script>
+    <script type="module" src="auth.js"></script>
+    <script src="main.js"></script>
+
+</body>
+</html>

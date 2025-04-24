@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+    <link  href="index.html">
+</head>
+<body>
+    <style>
+    svg text.text-body{
+        stroke: var(--loader-text-color);
+        animation: 4s  ease-in animate-stroke ;
+    }
+    @keyframes animate-stroke {
+       0%{
+            opacity: 2rem;
+            fill: transparent ;
+            stroke: var(--loader-text-color);
+            stroke-width: 3;
+            stroke-dashoffset: 30%;
+            stroke-dasharray: 0 10%;
+            font-style: initial;
+        }
+    }
+    
+    
+    </style>
+
+
+  <div class="loader-container">
+
+    <svg viewBox ="0 0 400 160">
+
+        <text x="50%" y="50%" dy=".32rem"  text-anchor="middle" class="text-body">
+            ELITEN
+        </text>
+
+    </svg>
+  </div>
+
+  <div class="face"></div>
+    <h2>hello joshva</h2>
+
+  </div>
+
+</body>
+</html>
