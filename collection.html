@@ -72,9 +72,45 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
-    <script src="admin.js"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+        
+        // Initialize Supabase client
+        const supabase = createClient(
+            'https://bjcwyyifoklzvtfcxjnz.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3d5eWlmb2tsenZ0ZmN4am56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MjM3MTQsImV4cCI6MjA2MDE5OTcxNH0.S3TAzmjSqE9VZkoUEdRMCVivpKmA0DEmN1rH9RqofFQ'
+        );
+        
+        // Expose Supabase client to window
+        window.supabase = supabase;
+        
+        // Define loadProducts function
+        window.loadProducts = async function() {
+            try {
+                console.log('Fetching products from Supabase...');
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw new Error(`Database error: ${error.message}`);
+                }
+
+                if (!data) {
+                    console.warn('No data returned from Supabase');
+                    return [];
+                }
+
+                console.log(`Successfully loaded ${data.length} products`);
+                return data;
+            } catch (error) {
+                console.error('Error in loadProducts:', error);
+                throw new Error(`Failed to load products: ${error.message}`);
+            }
+        };
+    </script>
     <script src="collection.js"></script>
 </body>
 </html> 

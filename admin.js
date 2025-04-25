@@ -128,24 +128,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const adminLoginSection = document.getElementById('admin-login-section');
     const loginError = document.getElementById('login-error');
 
-    // Firebase configuration for authentication only
+    // Ensure Firebase is used for admin login
     const firebaseConfig = {
         apiKey: "AIzaSyDbP9PEX-5FoI2IHLAbiJk9cL-80a-cgkM",
         authDomain: "eliten-admin.firebaseapp.com",
         projectId: "eliten-admin",
+        storageBucket: "eliten-admin.appspot.com",
         messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
         appId: "YOUR_APP_ID"
     };
 
-    // Initialize Firebase for authentication only
-    let app;
     if (!firebase.apps.length) {
-        app = firebase.initializeApp(firebaseConfig);
-    } else {
-        app = firebase.app();
+        firebase.initializeApp(firebaseConfig);
     }
 
-    // Initialize Firebase Auth
     const auth = firebase.auth();
 
     // Check if user is already logged in
@@ -308,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to load products from Supabase
     async function loadProducts() {
-        console.log('Loading products...');
+        console.log('Calling loadProducts...');
         const productsGrid = document.getElementById('products-grid');
         if (!productsGrid) {
             console.error('Products grid element not found');
@@ -317,50 +313,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             productsGrid.innerHTML = '<div class="loading">Loading products...</div>';
-            
-            const products = await window.loadProducts();
-            
+
+            const { data: products, error } = await supabase.from('products').select('*');
+            if (error) {
+                console.error('Error fetching products from Supabase:', error);
+                throw error;
+            }
+
+            console.log('Products fetched from Supabase:', products);
+
             productsGrid.innerHTML = '';
-            
+
             if (!products || products.length === 0) {
                 productsGrid.innerHTML = '<div class="no-products">No products found. Add your first product!</div>';
                 return;
             }
 
             products.forEach(product => {
-                addProductToGrid(product);
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <img src="${product.image_url}" alt="${product.name}" onerror="this.src='placeholder.jpg'">
+                    <h3>${product.name}</h3>
+                    <p>₹${product.price.toFixed(2)}</p>
+                    <p>Stock: ${product.stock}</p>
+                    <p>${product.description}</p>
+                `;
+                productsGrid.appendChild(productCard);
             });
         } catch (error) {
             console.error('Error loading products:', error);
             productsGrid.innerHTML = '<div class="error">Error loading products. Please try again.</div>';
-            showNotification('Error loading products. Please try again.', 'error');
         }
     }
 
-    // Function to add product to grid
-    function addProductToGrid(product) {
-        console.log('Creating product card for:', product);
-        const productsGrid = document.getElementById('products-grid');
-        if (!productsGrid) return;
-
-        const productCard = document.createElement('div');
-        productCard.className = 'product-card';
-        
-        productCard.innerHTML = `
-            <img src="${product.image_url}" alt="${product.name}" onerror="this.src='placeholder.jpg'">
-            <h3>${product.name}</h3>
-            <p>₹${product.price.toFixed(2)}</p>
-            <p>Stock: ${product.stock}</p>
-            <p>${product.description}</p>
-            <div class="product-actions">
-                <button class="edit-btn" onclick="editProduct('${product.id}')">Edit</button>
-                <button class="delete-btn" onclick="deleteProduct('${product.id}')">Delete</button>
-            </div>
-        `;
-        
-        productsGrid.appendChild(productCard);
-        console.log('Product card added to grid');
-    }
+    // Attach loadProducts to window for global access
+    window.loadProducts = loadProducts;
 
     // Function to delete product
     window.deleteProduct = async function(productId) {
@@ -727,3 +715,50 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
 });
+
+// Function to save a product to Supabase
+window.saveProduct = async function(productData) {
+    try {
+        console.log('Saving product to Supabase:', productData);
+
+        // Upload product image to Supabase Storage (if applicable)
+        const { data: storageData, error: storageError } = await supabase.storage
+            .from('product-images')
+            .upload(`images/${productData.image.name}`, productData.image, {
+                cacheControl: '3600',
+                upsert: true
+            });
+
+        if (storageError) {
+            console.error('Error uploading product image:', storageError);
+            throw storageError;
+        }
+
+        // Get the public URL of the uploaded image
+        const imageUrl = supabase.storage
+            .from('product-images')
+            .getPublicUrl(storageData.path).publicUrl;
+
+        // Save product details to the Supabase `products` table
+        const { data, error } = await supabase.from('products').insert([
+            {
+                name: productData.name,
+                price: productData.price,
+                stock: productData.stock,
+                description: productData.description,
+                image_url: imageUrl
+            }
+        ]);
+
+        if (error) {
+            console.error('Error saving product to Supabase:', error);
+            throw error;
+        }
+
+        console.log('Product saved successfully:', data);
+        return data[0].id; // Return the ID of the saved product
+    } catch (error) {
+        console.error('Error in saveProduct function:', error);
+        throw error;
+    }
+};

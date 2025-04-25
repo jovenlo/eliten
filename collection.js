@@ -55,12 +55,17 @@ document.addEventListener('DOMContentLoaded', updateCartCount);
 // Function to display products
 async function displayProducts() {
     const productsContainer = document.querySelector('.products-grid');
-    if (!productsContainer) return;
+    if (!productsContainer) {
+        console.error('Products container not found');
+        return;
+    }
     
     productsContainer.innerHTML = '<div class="loading">Loading products...</div>';
     
     try {
+        console.log('Attempting to load products...');
         const products = await window.loadProducts();
+        console.log('Products loaded:', products);
         
         if (!products || products.length === 0) {
             productsContainer.innerHTML = '<div class="no-products">No products available. Please check back later.</div>';
@@ -98,7 +103,13 @@ async function displayProducts() {
         });
     } catch (error) {
         console.error('Error loading products:', error);
-        productsContainer.innerHTML = '<div class="error">Error loading products. Please try again later.</div>';
+        productsContainer.innerHTML = `
+            <div class="error">
+                Error loading products. Please try again later.
+                <br>
+                <small>${error.message}</small>
+            </div>
+        `;
     }
 }
 
@@ -178,6 +189,11 @@ async function searchProducts() {
 
 // Initialize products display when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    if (!window.supabase || !window.loadProducts) {
+        console.error('Supabase client or loadProducts function not initialized');
+        return;
+    }
     displayProducts();
     updateCartCount();
 });

@@ -18,24 +18,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Firestore
     const db = firebase.firestore();
 
-    // Function to load products from Firestore
-    function loadProducts() {
-        const productsGrid = document.getElementById('products-grid');
-        if (!productsGrid) return;
-
-        productsGrid.innerHTML = '';
-
-        db.collection('products')
-            .orderBy('createdAt', 'desc')
-            .onSnapshot((snapshot) => {
-                productsGrid.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const product = doc.data();
-                    product.id = doc.id;
-                    addProductToGrid(product);
-                });
+    // Attach loadProducts to window object for global access
+    window.loadProducts = async function() {
+        try {
+            const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+            const products = [];
+            snapshot.forEach((doc) => {
+                const product = doc.data();
+                product.id = doc.id;
+                products.push(product);
             });
-    }
+            return products;
+        } catch (error) {
+            console.error('Error loading products:', error);
+            throw error;
+        }
+    };
 
     // Function to add product to grid
     function addProductToGrid(product) {
@@ -90,5 +88,13 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Load products when page loads
-    loadProducts();
-}); 
+    if (document.getElementById('products-grid')) {
+        window.loadProducts().then(products => {
+            const productsGrid = document.getElementById('products-grid');
+            productsGrid.innerHTML = '';
+            products.forEach(product => addProductToGrid(product));
+        }).catch(error => {
+            console.error('Error displaying products:', error);
+        });
+    }
+});
