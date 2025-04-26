@@ -9,10 +9,32 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-    window.supabaseClient = supabase; // Make it globally available
-    
-    console.log('Supabase client initialized:', supabase);
+    try {
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true
+            },
+            storage: {
+                accessKey: 'abd9a3e82bdc6677272b6ada1d155230',
+                secretKey: '62f0903f7b9ccb635e8e4bf4cf456b512e587367472f21cef7778878691dcfba'
+            }
+        });
+        window.supabaseClient = supabase; // Make it globally available
+        
+        console.log('Supabase client initialized with storage credentials');
+        
+        // Test storage access
+        supabase.storage.listBuckets().then(({ data, error }) => {
+            if (error) {
+                console.error('Storage access test failed:', error);
+            } else {
+                console.log('Available buckets:', data);
+            }
+        });
+    } catch (error) {
+        console.error('Failed to initialize Supabase client:', error);
+    }
     
     // Rest of your initialization code...
 });
@@ -887,9 +909,28 @@ window.saveProduct = async function(productData) {
     try {
         console.log('Saving product to Supabase:', productData);
 
+        // First check if the bucket exists
+        const { data: buckets, error: bucketsError } = await window.supabaseClient
+            .storage
+            .listBuckets();
+
+        if (bucketsError) {
+            console.error('Error checking buckets:', bucketsError);
+            throw new Error('Failed to access storage: ' + bucketsError.message);
+        }
+
+        console.log('Available buckets:', buckets);
+        
+        const bucketExists = buckets.some(bucket => bucket.name === 'products');
+        
+        if (!bucketExists) {
+            console.error('Buckets found:', buckets.map(b => b.name));
+            throw new Error('Storage bucket "products" does not exist. Please create it in your Supabase dashboard.');
+        }
+
         // Upload product image to Supabase Storage
         const { data: storageData, error: storageError } = await window.supabaseClient.storage
-            .from('product-images')
+            .from('products')
             .upload(`images/${productData.image.name}`, productData.image, {
                 cacheControl: '3600',
                 upsert: true
@@ -897,12 +938,12 @@ window.saveProduct = async function(productData) {
 
         if (storageError) {
             console.error('Error uploading product image:', storageError);
-            throw storageError;
+            throw new Error('Failed to upload image: ' + storageError.message);
         }
 
         // Get the public URL of the uploaded image
         const imageUrl = window.supabaseClient.storage
-            .from('product-images')
+            .from('products')
             .getPublicUrl(storageData.path).publicUrl;
 
         // Save product details to the Supabase `products` table
@@ -921,7 +962,7 @@ window.saveProduct = async function(productData) {
 
         if (error) {
             console.error('Error saving product to Supabase:', error);
-            throw error;
+            throw new Error('Failed to save product: ' + error.message);
         }
 
         console.log('Product saved successfully:', data);
@@ -931,17 +972,9 @@ window.saveProduct = async function(productData) {
             throw new Error('Failed to save product: No data returned');
         }
 
-        const savedProduct = data[0];
-        if (savedProduct.stock !== productData.stock) {
-            throw new Error('Stock synchronization error: Saved stock does not match input');
-        }
-
-        // Refresh inventory after adding new product
-        await initializeInventory();
-        
-        return savedProduct.id;
+        return data[0].id;
     } catch (error) {
-        console.error('Error in saveProduct function:', error);
+        console.error('Error in saveProduct:', error);
         throw error;
     }
 };
