@@ -1,6 +1,7 @@
 // Initialize Supabase client
 const supabaseUrl = 'https://bjcwyyifoklzvtfcxjnz.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3d5eWlmb2tsenZ0ZmN4am56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MjM3MTQsImV4cCI6MjA2MDE5OTcxNH0.S3TAzmjSqE9VZkoUEdRMCVivpKmA0DEmN1rH9RqofFQ';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3d5eWlmb2tsenZ0ZmN4am56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MjM3MTQsImV4cCI6MjA2MDE5OTcxNH0.S3TAzmjSqE9VZkoUEdRMCVivpKmA0DEmN1rH9RqofFQ';
+const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3d5eWlmb2tsenZ0ZmN4am56Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYyMzcxNCwiZXhwIjoyMDYwMTk5NzE0fQ.qMguqaTrKKa0Kl1An1x-RcB_Y1vG_Pwh9-6rDVF62Pc';
 
 // Wait for Supabase to be loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -10,10 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     try {
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+        // Initialize client with service role key for admin operations
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseServiceKey, {
             auth: {
                 autoRefreshToken: true,
-                persistSession: true
+                persistSession: true,
+                detectSessionInUrl: true
             },
             storage: {
                 accessKey: 'abd9a3e82bdc6677272b6ada1d155230',
@@ -22,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         window.supabaseClient = supabase; // Make it globally available
         
-        console.log('Supabase client initialized with storage credentials');
+        console.log('Supabase client initialized with service role key');
         
         // Test storage access
         supabase.storage.listBuckets().then(({ data, error }) => {
@@ -30,6 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Storage access test failed:', error);
             } else {
                 console.log('Available buckets:', data);
+                if (!data || data.length === 0) {
+                    console.warn('No buckets found. Please create a bucket in your Supabase dashboard.');
+                }
             }
         });
     } catch (error) {
@@ -364,11 +370,11 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadProducts() {
         try {
             console.log('Loading products...');
-        const productsGrid = document.getElementById('products-grid');
-        if (!productsGrid) {
-            console.error('Products grid element not found');
-            return;
-        }
+            const productsGrid = document.getElementById('products-grid');
+            if (!productsGrid) {
+                console.error('Products grid element not found');
+                return;
+            }
 
             productsGrid.innerHTML = '<div class="loading">Loading products...</div>';
 
@@ -391,8 +397,25 @@ document.addEventListener('DOMContentLoaded', function() {
             products.forEach(product => {
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
+                
+                // Create image element with error handling
+                const img = document.createElement('img');
+                img.src = product.image_url;
+                img.alt = product.name;
+                img.onerror = function() {
+                    console.error('Failed to load image:', product.image_url);
+                    // Try to reconstruct the URL if it's not in the correct format
+                    if (!product.image_url.includes('/storage/v1/object/public/')) {
+                        const reconstructedUrl = `${supabaseUrl}/storage/v1/object/public/products/${product.image_url.split('/').pop()}`;
+                        console.log('Trying reconstructed URL:', reconstructedUrl);
+                        this.src = reconstructedUrl;
+                    }
+                };
+                
                 productCard.innerHTML = `
-                    <img src="${product.image_url || 'placeholder.jpg'}" alt="${product.name}" onerror="this.src='placeholder.jpg'">
+                    <div class="product-image">
+                        ${img.outerHTML}
+                    </div>
                     <h3>${product.name}</h3>
                     <p>₹${product.price.toFixed(2)}</p>
                     <p>Stock: ${product.stock}</p>
@@ -907,7 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Function to save a product to Supabase
 window.saveProduct = async function(productData) {
     try {
-        console.log('Saving product to Supabase:', productData);
+        console.log('Starting product save process:', productData);
 
         // First check if the bucket exists
         const { data: buckets, error: bucketsError } = await window.supabaseClient
@@ -929,9 +952,11 @@ window.saveProduct = async function(productData) {
         }
 
         // Upload product image to Supabase Storage
+        console.log('Uploading image to storage...');
+        const imagePath = `images/${Date.now()}_${productData.image.name}`;
         const { data: storageData, error: storageError } = await window.supabaseClient.storage
             .from('products')
-            .upload(`images/${productData.image.name}`, productData.image, {
+            .upload(imagePath, productData.image, {
                 cacheControl: '3600',
                 upsert: true
             });
@@ -941,27 +966,31 @@ window.saveProduct = async function(productData) {
             throw new Error('Failed to upload image: ' + storageError.message);
         }
 
-        // Get the public URL of the uploaded image
-        const imageUrl = window.supabaseClient.storage
-            .from('products')
-            .getPublicUrl(storageData.path).publicUrl;
+        console.log('Image uploaded successfully:', storageData);
+
+        // Generate the correct public URL format
+        const publicUrl = `${supabaseUrl}/storage/v1/object/public/products/${imagePath}`;
+        console.log('Generated image URL:', publicUrl);
 
         // Save product details to the Supabase `products` table
-        const { data, error } = await window.supabaseClient.from('products').insert([
-            {
-                name: productData.name,
-                price: productData.price,
-                stock: productData.stock,
-                low_stock_threshold: 5, // Default low stock threshold
-                description: productData.description,
-                image_url: imageUrl,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            }
-        ]).select();
+        console.log('Saving product to database...');
+        const { data, error } = await window.supabaseClient
+            .from('products')
+            .insert([
+                {
+                    name: productData.name,
+                    price: parseFloat(productData.price),
+                    stock: parseInt(productData.stock),
+                    description: productData.description,
+                    image_url: publicUrl,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }
+            ])
+            .select();
 
         if (error) {
-            console.error('Error saving product to Supabase:', error);
+            console.error('Error saving product to database:', error);
             throw new Error('Failed to save product: ' + error.message);
         }
 
@@ -972,6 +1001,9 @@ window.saveProduct = async function(productData) {
             throw new Error('Failed to save product: No data returned');
         }
 
+        // Refresh the products list
+        await window.loadProducts();
+        
         return data[0].id;
     } catch (error) {
         console.error('Error in saveProduct:', error);
