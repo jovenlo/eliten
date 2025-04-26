@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Firebase Firestore SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Custom Scripts -->
@@ -131,11 +131,6 @@
                     <h2>Existing Products</h2>
                     <div class="products-grid" id="products-grid">
                         <!-- Products will be dynamically added here -->
-                        <div class="product-card">
-                            <div class="product-actions">
-                                <button class="edit-btn">Edit</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -193,26 +188,14 @@
                         <thead>
                             <tr>
                                 <th>Product</th>
-                                <th>Category</th>
                                 <th>Current Stock</th>
-                                <th>Low Stock Alert</th>
                                 <th>Sold</th>
-                                <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="inventory-body">
                             <!-- Inventory items will be dynamically added here -->
                         </tbody>
                     </table>
-                </div>
-
-                <!-- Low Stock Alert -->
-                <div class="low-stock-alert" id="low-stock-alert">
-                    <h3>Low Stock Products</h3>
-                    <div class="alert-items" id="low-stock-items">
-                        <!-- Low stock items will be dynamically added here -->
-                    </div>
                 </div>
             </div>
         </div>

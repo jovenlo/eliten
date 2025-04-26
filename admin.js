@@ -1,3 +1,22 @@
+// Initialize Supabase client
+const supabaseUrl = 'https://bjcwyyifoklzvtfcxjnz.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3d5eWlmb2tsenZ0ZmN4am56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MjM3MTQsImV4cCI6MjA2MDE5OTcxNH0.S3TAzmjSqE9VZkoUEdRMCVivpKmA0DEmN1rH9RqofFQ';
+
+// Wait for Supabase to be loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.supabase === 'undefined') {
+        console.error('Supabase not loaded');
+        return;
+    }
+    
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabase; // Make it globally available
+    
+    console.log('Supabase client initialized:', supabase);
+    
+    // Rest of your initialization code...
+});
+
 // Mobile Navigation Functions
 function shownavbar() {
     const sideNav = document.querySelector('.side-nav');
@@ -134,8 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
         authDomain: "eliten-admin.firebaseapp.com",
         projectId: "eliten-admin",
         storageBucket: "eliten-admin.appspot.com",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:abcdef1234567890"
     };
 
     if (!firebase.apps.length) {
@@ -289,8 +308,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show success message
             showNotification('Product added successfully!', 'success');
             
-            // Reload products list
-            await loadProducts();
+            // Force refresh inventory
+            await initializeInventory();
+            
+            // Verify the product was added correctly
+            const { data: addedProduct, error: fetchError } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .eq('id', productId)
+                .single();
+
+            if (fetchError) {
+                throw new Error('Failed to verify product addition: ' + fetchError.message);
+            }
+
+            if (!addedProduct || addedProduct.stock !== stock) {
+                throw new Error('Stock synchronization error: Product stock mismatch');
+            }
+
+            console.log('Product verified in database:', addedProduct);
         } catch (error) {
             console.error('Error in form submission:', error);
             showNotification(error.message, 'error');
@@ -304,23 +340,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to load products from Supabase
     async function loadProducts() {
-        console.log('Calling loadProducts...');
+        try {
+            console.log('Loading products...');
         const productsGrid = document.getElementById('products-grid');
         if (!productsGrid) {
             console.error('Products grid element not found');
             return;
         }
 
-        try {
             productsGrid.innerHTML = '<div class="loading">Loading products...</div>';
 
-            const { data: products, error } = await supabase.from('products').select('*');
+            const { data: products, error } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
+
             if (error) {
-                console.error('Error fetching products from Supabase:', error);
                 throw error;
             }
-
-            console.log('Products fetched from Supabase:', products);
 
             productsGrid.innerHTML = '';
 
@@ -333,67 +370,236 @@ document.addEventListener('DOMContentLoaded', function() {
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.innerHTML = `
-                    <img src="${product.image_url}" alt="${product.name}" onerror="this.src='placeholder.jpg'">
+                    <img src="${product.image_url || 'placeholder.jpg'}" alt="${product.name}" onerror="this.src='placeholder.jpg'">
                     <h3>${product.name}</h3>
                     <p>₹${product.price.toFixed(2)}</p>
                     <p>Stock: ${product.stock}</p>
                     <p>${product.description}</p>
+                    <div class="product-actions">
+                        <button class="edit-btn" onclick="editProduct('${product.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteProduct('${product.id}')">Delete</button>
+                    </div>
                 `;
                 productsGrid.appendChild(productCard);
             });
         } catch (error) {
             console.error('Error loading products:', error);
-            productsGrid.innerHTML = '<div class="error">Error loading products. Please try again.</div>';
+            showNotification('Error loading products: ' + error.message, 'error');
         }
     }
 
     // Attach loadProducts to window for global access
     window.loadProducts = loadProducts;
 
-    // Function to delete product
-    window.deleteProduct = async function(productId) {
-        if (confirm('Are you sure you want to delete this product?')) {
-            try {
-                await window.deleteProduct(productId);
-                showNotification('Product deleted successfully!', 'success');
-                loadProducts();
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                showNotification('Error deleting product. Please try again.', 'error');
-            }
-        }
-    };
-
     // Function to edit product
     window.editProduct = async function(productId) {
         try {
-            const products = await window.loadProducts();
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-
-            const newName = prompt('Enter new product name:', product.name);
-            if (newName === null) return;
+            console.log('Editing product:', productId);
             
-            const newPrice = prompt('Enter new price:', product.price);
-            if (newPrice === null) return;
+            // Fetch the current product data
+            const { data: product, error: fetchError } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .eq('id', productId)
+                .single();
 
-            const newStock = prompt('Enter current Stock:', product.stock);
-            if (newStock === null) return;
+            if (fetchError) {
+                console.error('Error fetching product:', fetchError);
+                throw fetchError;
+            }
 
-            // Update product in Supabase
-            await window.updateProduct(productId, {
-                name: newName,
-                price: parseFloat(newPrice),
-                stock: parseInt(newStock)
-            });
+            if (!product) {
+                throw new Error('Product not found');
+            }
+
+            // Create edit form
+            const editForm = document.createElement('div');
+            editForm.className = 'edit-product-form';
+            editForm.innerHTML = `
+                <h3>Edit Product</h3>
+                <form id="edit-product-form">
+                    <div class="form-group">
+                        <label for="edit-name">Product Name</label>
+                        <input type="text" id="edit-name" value="${product.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-price">Price</label>
+                        <input type="number" id="edit-price" value="${product.price}" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-stock">Stock</label>
+                        <input type="number" id="edit-stock" value="${product.stock || 0}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-description">Description</label>
+                        <textarea id="edit-description" required>${product.description}</textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Save Changes</button>
+                        <button type="button" class="cancel-btn" onclick="closeEditForm()">Cancel</button>
+                    </div>
+                </form>
+            `;
+
+            // Add form to the page
+            document.body.appendChild(editForm);
+
+            // Handle form submission
+            document.getElementById('edit-product-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                try {
+                    const updatedProduct = {
+                        name: document.getElementById('edit-name').value,
+                        price: parseFloat(document.getElementById('edit-price').value),
+                        stock: parseInt(document.getElementById('edit-stock').value),
+                        description: document.getElementById('edit-description').value,
+                        updated_at: new Date().toISOString()
+                    };
+
+                    console.log('Updating product:', updatedProduct);
+
+                    const { error: updateError } = await window.supabaseClient
+                        .from('products')
+                        .update(updatedProduct)
+                        .eq('id', productId);
+
+                    if (updateError) {
+                        throw updateError;
+                    }
 
             showNotification('Product updated successfully!', 'success');
-            loadProducts();
+                    closeEditForm();
+                    
+                    // Refresh both products list and inventory
+                    await loadProducts();
+                    await initializeInventory();
         } catch (error) {
             console.error('Error updating product:', error);
-            showNotification('Error updating product. Please try again.', 'error');
+                    showNotification('Error updating product: ' + error.message, 'error');
+                }
+            });
+        } catch (error) {
+            console.error('Error in editProduct:', error);
+            showNotification('Error editing product: ' + error.message, 'error');
         }
     };
+
+    // Function to close edit form
+    window.closeEditForm = function() {
+        const editForm = document.querySelector('.edit-product-form');
+        if (editForm) {
+            editForm.remove();
+        }
+    };
+
+    // Function to delete product
+    window.deleteProduct = async function(productId) {
+        try {
+            if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+                return;
+            }
+
+            console.log('Deleting product:', productId);
+
+            const { error: deleteError } = await window.supabaseClient
+                .from('products')
+                .delete()
+                .eq('id', productId);
+
+            if (deleteError) {
+                throw deleteError;
+            }
+
+            showNotification('Product deleted successfully!', 'success');
+            initializeInventory(); // Refresh the inventory
+        } catch (error) {
+            console.error('Error in deleteProduct:', error);
+            showNotification('Error deleting product: ' + error.message, 'error');
+        }
+    };
+
+    // Add styles for edit form
+    const editFormStyle = document.createElement('style');
+    editFormStyle.textContent = `
+        .edit-product-form {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .edit-product-form h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .edit-product-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .edit-product-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .edit-product-form input,
+        .edit-product-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .edit-product-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .edit-product-form .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .edit-product-form .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-product-form .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-product-form .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .edit-product-form .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+    `;
+    document.head.appendChild(editFormStyle);
 
     // Analytics Functions
     function updateAnalytics() {
@@ -457,16 +663,42 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(ctx, config);
     }
 
-    // Inventory Management
-    const searchBox = document.querySelector('.search-box input');
-    const stockFilter = document.querySelector('select[name="stock-status"]');
-    const sortFilter = document.querySelector('select[name="sort-by"]');
+    // Render inventory table
+    function renderInventoryTable(data) {
     const inventoryTable = document.querySelector('.inventory-table tbody');
-    const lowStockAlert = document.querySelector('.low-stock-alert');
+        if (!inventoryTable) {
+            console.error('Inventory table element not found');
+            return;
+        }
+
+        console.log('Rendering inventory table with data:', data);
+        inventoryTable.innerHTML = '';
+
+        if (data.length === 0) {
+            inventoryTable.innerHTML = `
+                <tr>
+                    <td colspan="3" class="no-data">No products found</td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.stock}</td>
+                <td>0</td>
+            `;
+            inventoryTable.appendChild(row);
+        });
+    }
 
     // Initialize inventory display
     async function initializeInventory() {
         try {
+            console.log('Initializing inventory...');
+            
             // Check if user is authenticated
             const user = firebase.auth().currentUser;
             if (!user) {
@@ -475,8 +707,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // Get inventory table element
+            const inventoryTable = document.querySelector('.inventory-table tbody');
+            if (!inventoryTable) {
+                console.error('Inventory table element not found');
+                return;
+            }
+
             // Load products from Supabase
-            const products = await window.loadProducts();
+            console.log('Loading products for inventory...');
+            const { data: products, error } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error loading products:', error);
+                throw error;
+            }
+
+            console.log('Products loaded for inventory:', products);
+
             if (!products || products.length === 0) {
                 console.log('No products found');
                 renderInventoryTable([]);
@@ -487,171 +738,86 @@ document.addEventListener('DOMContentLoaded', function() {
             const inventoryData = products.map(product => ({
                 id: product.id,
                 name: product.name,
-                category: product.category || 'Uncategorized',
-                price: product.price,
-                stock: product.stock,
-                lowStockThreshold: product.low_stock_threshold || 5,
-                description: product.description,
-                image_url: product.image_url,
-                created_at: product.created_at,
-                updated_at: product.updated_at
+                stock: product.stock || 0
             }));
 
+            console.log('Rendering inventory table...');
             renderInventoryTable(inventoryData);
-            updateLowStockAlerts(inventoryData);
         } catch (error) {
-            console.error('Error loading inventory:', error);
+            console.error('Error in initializeInventory:', error);
             showNotification('Error loading inventory data', 'error');
         }
-    }
-
-    // Render inventory table
-    function renderInventoryTable(data) {
-        if (!inventoryTable) {
-            console.error('Inventory table element not found');
-            return;
-        }
-
-        inventoryTable.innerHTML = '';
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.name}</td>
-                <td>${item.category}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td class="status-${getStockStatus(item.stock, item.lowStockThreshold)}">
-                    ${item.stock} units
-                </td>
-                <td>${item.lowStockThreshold} units</td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn-edit" onclick="editProduct(${item.id})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn-delete" onclick="deleteProduct(${item.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </td>
-            `;
-            inventoryTable.appendChild(row);
-        });
-    }
-
-    // Update low stock alerts
-    function updateLowStockAlerts(data) {
-        if (!lowStockAlert) {
-            console.error('Low stock alert element not found');
-            return;
-        }
-
-        const lowStockItems = data.filter(item => 
-            item.stock <= item.lowStockThreshold && item.stock > 0
-        );
-
-        if (lowStockItems.length === 0) {
-            lowStockAlert.style.display = 'none';
-            return;
-        }
-
-        lowStockAlert.style.display = 'block';
-        const alertItems = lowStockAlert.querySelector('.alert-items');
-        if (!alertItems) {
-            console.error('Alert items container not found');
-            return;
-        }
-
-        alertItems.innerHTML = '';
-        lowStockItems.forEach(item => {
-            const alertItem = document.createElement('div');
-            alertItem.className = 'alert-item';
-            alertItem.innerHTML = `
-                <h4>${item.name}</h4>
-                <p>Category: ${item.category}</p>
-                <p>Current Stock: ${item.stock} units</p>
-                <p>Low Stock Threshold: ${item.lowStockThreshold} units</p>
-            `;
-            alertItems.appendChild(alertItem);
-        });
-    }
-
-    // Get stock status
-    function getStockStatus(stock, threshold) {
-        if (stock === 0) return 'out-of-stock';
-        if (stock <= threshold) return 'low-stock';
-        return 'in-stock';
     }
 
     // Filter and sort inventory
     async function filterAndSortInventory() {
         try {
+            console.log('Filtering and sorting inventory...');
+            
+            // Get filter values
+            const searchTerm = document.getElementById('inventory-search').value.toLowerCase();
+            const stockFilter = document.getElementById('stock-filter').value;
+            const sortBy = document.getElementById('sort-by').value;
+
             // Load products from Supabase
-            const products = await window.loadProducts();
-            if (!products || products.length === 0) {
-                renderInventoryTable([]);
-                return;
+            const { data: products, error } = await window.supabaseClient
+                .from('products')
+                .select('*');
+
+            if (error) {
+                console.error('Error loading products for filtering:', error);
+                throw error;
             }
 
             let filteredData = products.map(product => ({
                 id: product.id,
                 name: product.name,
-                category: product.category || 'Uncategorized',
                 price: product.price,
                 stock: product.stock,
                 lowStockThreshold: product.low_stock_threshold || 5
             }));
 
             // Apply search filter
-            const searchTerm = searchBox.value.toLowerCase();
             if (searchTerm) {
                 filteredData = filteredData.filter(item => 
-                    item.name.toLowerCase().includes(searchTerm) ||
-                    item.category.toLowerCase().includes(searchTerm)
+                    item.name.toLowerCase().includes(searchTerm)
                 );
             }
 
             // Apply stock status filter
-            const stockStatus = stockFilter.value;
-            if (stockStatus !== 'all') {
+            if (stockFilter !== 'all') {
                 filteredData = filteredData.filter(item => {
                     const status = getStockStatus(item.stock, item.lowStockThreshold);
-                    return status === stockStatus;
+                    return status === stockFilter;
                 });
             }
 
             // Apply sorting
-            const sortBy = sortFilter.value;
             filteredData.sort((a, b) => {
                 switch (sortBy) {
-                    case 'name-asc':
+                    case 'name':
                         return a.name.localeCompare(b.name);
-                    case 'name-desc':
-                        return b.name.localeCompare(a.name);
-                    case 'stock-asc':
+                    case 'stock':
                         return a.stock - b.stock;
-                    case 'stock-desc':
-                        return b.stock - a.stock;
-                    case 'price-asc':
-                        return a.price - b.price;
-                    case 'price-desc':
-                        return b.price - a.price;
+                    case 'sold':
+                        return 0; // Add sold count logic if needed
                     default:
                         return 0;
                 }
             });
 
+            console.log('Filtered and sorted data:', filteredData);
             renderInventoryTable(filteredData);
-            updateLowStockAlerts(filteredData);
         } catch (error) {
-            console.error('Error filtering inventory:', error);
+            console.error('Error in filterAndSortInventory:', error);
             showNotification('Error filtering inventory data', 'error');
         }
     }
 
-    // Event listeners
-    if (searchBox) searchBox.addEventListener('input', filterAndSortInventory);
-    if (stockFilter) stockFilter.addEventListener('change', filterAndSortInventory);
-    if (sortFilter) sortFilter.addEventListener('change', filterAndSortInventory);
+    // Add event listeners for inventory controls
+    document.getElementById('inventory-search').addEventListener('input', filterAndSortInventory);
+    document.getElementById('stock-filter').addEventListener('change', filterAndSortInventory);
+    document.getElementById('sort-by').addEventListener('change', filterAndSortInventory);
 
     // Initialize when user is authenticated
     firebase.auth().onAuthStateChanged((user) => {
@@ -721,8 +887,8 @@ window.saveProduct = async function(productData) {
     try {
         console.log('Saving product to Supabase:', productData);
 
-        // Upload product image to Supabase Storage (if applicable)
-        const { data: storageData, error: storageError } = await supabase.storage
+        // Upload product image to Supabase Storage
+        const { data: storageData, error: storageError } = await window.supabaseClient.storage
             .from('product-images')
             .upload(`images/${productData.image.name}`, productData.image, {
                 cacheControl: '3600',
@@ -735,20 +901,23 @@ window.saveProduct = async function(productData) {
         }
 
         // Get the public URL of the uploaded image
-        const imageUrl = supabase.storage
+        const imageUrl = window.supabaseClient.storage
             .from('product-images')
             .getPublicUrl(storageData.path).publicUrl;
 
         // Save product details to the Supabase `products` table
-        const { data, error } = await supabase.from('products').insert([
+        const { data, error } = await window.supabaseClient.from('products').insert([
             {
                 name: productData.name,
                 price: productData.price,
                 stock: productData.stock,
+                low_stock_threshold: 5, // Default low stock threshold
                 description: productData.description,
-                image_url: imageUrl
+                image_url: imageUrl,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             }
-        ]);
+        ]).select();
 
         if (error) {
             console.error('Error saving product to Supabase:', error);
@@ -756,7 +925,21 @@ window.saveProduct = async function(productData) {
         }
 
         console.log('Product saved successfully:', data);
-        return data[0].id; // Return the ID of the saved product
+        
+        // Verify the product was saved correctly
+        if (!data || data.length === 0) {
+            throw new Error('Failed to save product: No data returned');
+        }
+
+        const savedProduct = data[0];
+        if (savedProduct.stock !== productData.stock) {
+            throw new Error('Stock synchronization error: Saved stock does not match input');
+        }
+
+        // Refresh inventory after adding new product
+        await initializeInventory();
+        
+        return savedProduct.id;
     } catch (error) {
         console.error('Error in saveProduct function:', error);
         throw error;
