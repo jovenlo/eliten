@@ -647,8 +647,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(editFormStyle);
 
     // Analytics Functions
+    let salesChart = null; // Store chart instance globally
+
     function updateAnalytics() {
-        const products = JSON.parse(localStorage.getItem('products'));
+        const products = JSON.parse(localStorage.getItem('products')) || [];
         const totalSales = products.reduce((sum, product) => sum + (product.price * product.stock), 0);
         const totalProductsSold = products.reduce((sum, product) => sum + product.stock, 0);
         const avgOrderValue = totalProductsSold > 0 ? totalSales / totalProductsSold : 0;
@@ -663,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateSalesChart() {
         const ctx = document.getElementById('sales-chart').getContext('2d');
-        const products = JSON.parse(localStorage.getItem('products'));
+        const products = JSON.parse(localStorage.getItem('products')) || [];
         
         // Create monthly sales data
         const monthlySales = Array(12).fill(0);
@@ -705,8 +707,75 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
 
-        new Chart(ctx, config);
+        // Destroy existing chart if it exists
+        if (salesChart) {
+            salesChart.destroy();
+        }
+
+        // Create new chart
+        salesChart = new Chart(ctx, config);
     }
+
+    // Reset Analytics Function
+    function resetAnalytics() {
+        if (confirm('Are you sure you want to reset all analytics data? This action cannot be undone.')) {
+            // Reset local storage data
+            localStorage.setItem('products', JSON.stringify([]));
+            
+            // Reset display values
+            document.getElementById('total-sales').textContent = '₹0';
+            document.getElementById('total-products-sold').textContent = '0';
+            document.getElementById('avg-order-value').textContent = '₹0';
+            
+            // Reset chart
+            if (salesChart) {
+                salesChart.destroy();
+            }
+            updateSalesChart();
+            
+            showNotification('Analytics data has been reset successfully', 'success');
+        }
+    }
+
+    // Add event listener for reset button
+    document.addEventListener('DOMContentLoaded', function() {
+        const resetButton = document.getElementById('reset-analytics');
+        if (resetButton) {
+            resetButton.addEventListener('click', resetAnalytics);
+        }
+    });
+
+    // Add styles for reset button
+    const resetButtonStyle = document.createElement('style');
+    resetButtonStyle.textContent = `
+        .analytics-controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .reset-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .reset-btn:hover {
+            background-color: #c82333;
+        }
+
+        .reset-btn i {
+            font-size: 14px;
+        }
+    `;
+    document.head.appendChild(resetButtonStyle);
 
     // Render inventory table
     function renderInventoryTable(data) {
@@ -887,8 +956,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Add notification styles
-    const style = document.createElement('style');
-    style.textContent = `
+    const notificationStyle = document.createElement('style');
+    notificationStyle.textContent = `
         .notification {
             position: fixed;
             top: 20px;
@@ -924,7 +993,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(notificationStyle);
 });
 
 // Function to save a product to Supabase
