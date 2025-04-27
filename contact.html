@@ -3,12 +3,12 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Contact</title>
-        <meta name="description" content="">
+        <title>Contact - ELITEN</title>
+        <meta name="description" content="Contact ELITEN for inquiries about our premium jewelry collection">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         
         <!-- Favicons -->
@@ -30,6 +30,7 @@
         <!-- Template Main CSS File -->
         <link href="soucescode/css/style.css" rel="stylesheet">
         <link href="contact.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     </head>
     <body>
         <section id="contact" class="contact">
@@ -38,17 +39,19 @@
                     <div class="navbar-links">
                         <p class="navbar-link"><a href="collection.html">Collection</a></p>
                         <p class="navbar-link"><a href="index.html">Home</a></p>
-                        <p class="navbar-link"><a href="About.html">About</a></p>
+                        <p class="navbar-link"><a href="about.html">About</a></p>
                     </div>
                     <div class="nav-toggle" onclick="shownavbar()">
                         <i class="fa-solid fa-bars"></i>
                     </div>
                     <h2>Contact</h2>
-                    <p>Contact Me</p>
+                    <p>Contact Us</p>
                 </div>
 
                 <div class="marq">
-                    <marquee behavior="solid" direction="straigth"><i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer, Some limits hurry up its too late</i></marquee>
+                    <marquee behavior="scroll" direction="left" aria-label="Special offers">
+                        <i>Get your fashion and buy it in discount and enjoy your fashion, order and place in a 2-3 days. And also have exchange offer, Some limits hurry up its too late</i>
+                    </marquee>
                     <div class="side-nav">
                         <p>
                             <i class="fa-solid fa-xmark" onclick="closenavbar()"></i>
@@ -56,7 +59,7 @@
                         <div class="side-navbar-links">
                             <p class="tog-navbar-link"><a href="index.html" class="texted0">Home</a></p>
                             <p class="tog-navbar-link"><a href="collection.html" class="texted0">Collection</a></p>
-                            <p class="tog-navbar-link"><a href="About.html" class="texted0">About</a></p>
+                            <p class="tog-navbar-link"><a href="about.html" class="texted0">About</a></p>
                         </div>
                     </div>
                 </div>
@@ -65,7 +68,7 @@
                     <div class="col-md-6 d-flex align-items-stretch">
                         <div class="info-box">
                             <i class="bx bx-map"></i>
-                            <h3>My Address</h3>
+                            <h3>Our Address</h3>
                             <p>pothanur, mettur, coimbatore</p>
                         </div>
                     </div>
@@ -87,20 +90,20 @@
                     <div class="col-md-6 mt-4 d-flex align-items-stretch">
                         <div class="info-box">
                             <i class="bx bx-envelope"></i>
-                            <h3>Email Me</h3>
-                            <p>contact@example.com</p>
+                            <h3>Email Us</h3>
+                            <p>contact@eliten.com</p>
                         </div>
                     </div>
                     <div class="col-md-6 mt-4 d-flex align-items-stretch">
                         <div class="info-box">
                             <i class="bx bx-phone-call"></i>
-                            <h3>Call Me</h3>
+                            <h3>Call Us</h3>
                             <p>+1 5589 55488 55</p>
                         </div>
                     </div>
                 </div>
 
-                <form action="forms/contact.php" method="post" role="form" class="php-email-form mt-4" id="contactForm">
+                <form action="forms/contact.php" method="post" class="php-email-form mt-4" id="contactForm">
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required 
@@ -217,13 +220,8 @@
                 const sideNav = document.querySelector('.side-nav');
                 const body = document.body;
                 
-                // Show the side navigation
                 sideNav.style.display = 'block';
-                
-                // Add animation class
                 sideNav.classList.add('slide-in');
-                
-                // Prevent body scrolling when menu is open
                 body.style.overflow = 'hidden';
             }
 
@@ -231,14 +229,10 @@
                 const sideNav = document.querySelector('.side-nav');
                 const body = document.body;
                 
-                // Remove animation class
                 sideNav.classList.remove('slide-in');
                 sideNav.classList.add('slide-out');
-                
-                // Allow body scrolling again
                 body.style.overflow = 'auto';
                 
-                // Hide the side navigation after animation
                 setTimeout(() => {
                     sideNav.style.display = 'none';
                     sideNav.classList.remove('slide-out');
