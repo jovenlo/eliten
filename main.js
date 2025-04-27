@@ -22,3 +22,20 @@ document.querySelector('.marq').addEventListener('click', function(e) {
         closenavbar();
     }
 });
+
+// Video loading handler
+document.addEventListener('DOMContentLoaded', function() {
+    const videos = document.querySelectorAll('.box video, .box2 video');
+    
+    videos.forEach(video => {
+        // Add loaded class when video can play
+        video.addEventListener('canplay', function() {
+            this.classList.add('loaded');
+        });
+        
+        // Force video to play (some browsers require this)
+        video.play().catch(error => {
+            console.log('Video autoplay failed:', error);
+        });
+    });
+});
