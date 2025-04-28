@@ -145,8 +145,13 @@
         <!-- Template Main JS File -->
         <script src="soucescode/js/main.js"></script>
         <script src="https://kit.fontawesome.com/f6a9740089.js" crossorigin="anonymous"></script>
-
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
         <script>
+            // Initialize EmailJS with your public key
+            (function() {
+                emailjs.init("JjV8fLCUMUTJBKbT2");
+            })();
+
             document.getElementById('contactForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -163,42 +168,35 @@
                 sentMessage.style.display = 'none';
                 
                 // Get form data
-                const formData = new FormData(form);
+                const formData = {
+                    from_name: form.querySelector('[name="name"]').value,
+                    from_email: form.querySelector('[name="email"]').value,
+                    subject: form.querySelector('[name="subject"]').value,
+                    message: form.querySelector('[name="message"]').value,
+                    to_name: "ELITEN" // Add recipient name
+                };
                 
-                // Send form data
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    loading.style.display = 'none';
-                    submitButton.disabled = false;
-                    
-                    if (data.status === 'success') {
+                // Send email using EmailJS
+                emailjs.send("service_3vcptya", "template_3nhvvw5", formData)
+                    .then(function(response) {
+                        console.log('SUCCESS!', response.status, response.text);
+                        loading.style.display = 'none';
+                        submitButton.disabled = false;
                         sentMessage.style.display = 'block';
                         form.reset();
+                        
                         // Hide success message after 5 seconds
                         setTimeout(() => {
                             sentMessage.style.display = 'none';
                         }, 5000);
-                    } else {
+                    })
+                    .catch(function(error) {
+                        console.error('FAILED...', error);
+                        loading.style.display = 'none';
+                        submitButton.disabled = false;
                         errorMessage.style.display = 'block';
-                        errorMessage.textContent = data.message;
-                    }
-                })
-                .catch(error => {
-                    loading.style.display = 'none';
-                    submitButton.disabled = false;
-                    errorMessage.style.display = 'block';
-                    errorMessage.textContent = 'An error occurred. Please try again later.';
-                    console.error('Error:', error);
-                });
+                        errorMessage.textContent = error.text || 'An error occurred. Please try again later.';
+                    });
             });
 
             // Add input validation
