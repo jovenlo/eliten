@@ -24,8 +24,8 @@ function loadCheckoutItems() {
         subtotal += item.price * (item.quantity || 1);
     });
 
-    const tax = subtotal * 0.1;
-    const shipping = 5.99;
+    const tax = 1; // Fixed tax of 1 rupee
+    const shipping = 0; // Free shipping
     const total = subtotal + tax + shipping;
 
     document.getElementById('checkout-subtotal').textContent = `₹${subtotal.toFixed(2)}`;

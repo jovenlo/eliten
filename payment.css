@@ -394,4 +394,39 @@
 
 .price, .amount, .total-amount {
     font-family: 'Noto Sans', 'Playfair Display', serif;
+}
+
+/* Google Pay QR Code Styles */
+#gpay-qr-container {
+    text-align: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#gpay-qr-container h3 {
+    margin-bottom: 1rem;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+#gpay-qr-code {
+    margin: 0 auto;
+    max-width: 256px;
+    padding: 1rem;
+    background: white;
+    border-radius: 4px;
+}
+
+#gpay-qr-code canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+
+#gpay-message {
+    margin-top: 1rem;
+    color: #666;
+    font-size: 0.9rem;
 } 

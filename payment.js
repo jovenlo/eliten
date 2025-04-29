@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Calculate totals
-    const tax = subtotal * 0.1; // 10% tax
-    const shipping = 5.99;
+    const tax = 1; // Fixed tax of 1 rupee
+    const shipping = 0; // Free shipping
     const total = subtotal + tax + shipping;
     
     // Update display
@@ -43,34 +43,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Payment method selection
     const paymentOptions = document.querySelectorAll('.payment-option');
-    const cardForm = document.querySelector('.card-form');
-    const paytmForm = document.querySelector('.paytm-form');
-    const gpayForm = document.querySelector('.gpay-form');
-    const upiForm = document.querySelector('.upi-form');
+    const paymentForms = {
+        card: document.querySelector('.card-form'),
+        gpay: document.querySelector('.gpay-form'),
+        paytm: document.querySelector('.paytm-form'),
+        upi: document.querySelector('.upi-form')
+    };
     
-    // Set default payment method to card
-    if (paymentOptions.length > 0) {
-        paymentOptions[0].classList.add('active');
-        cardForm.style.display = 'block';
-        paytmForm.style.display = 'none';
-        gpayForm.style.display = 'none';
-        upiForm.style.display = 'none';
-    }
-    
+    // Initialize payment method selection
     paymentOptions.forEach(option => {
         option.addEventListener('click', function() {
+            const method = this.dataset.method;
+            
             // Remove active class from all options
             paymentOptions.forEach(opt => opt.classList.remove('active'));
-            
-            // Add active class to clicked option
             this.classList.add('active');
             
-            // Show/hide appropriate form
-            const method = this.dataset.method;
-            cardForm.style.display = method === 'card' ? 'block' : 'none';
-            paytmForm.style.display = method === 'paytm' ? 'block' : 'none';
-            gpayForm.style.display = method === 'gpay' ? 'block' : 'none';
-            upiForm.style.display = method === 'upi' ? 'block' : 'none';
+            // Show selected payment form
+            Object.values(paymentForms).forEach(form => form.style.display = 'none');
+            if (paymentForms[method]) {
+                paymentForms[method].style.display = 'block';
+            }
         });
     });
     
@@ -104,224 +97,448 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Add loading state to Pay Now button
+    // Google Pay specific initialization
+    const gpayContainer = document.createElement('div');
+    gpayContainer.id = 'gpay-qr-container';
+    gpayContainer.style.display = 'none';
+    gpayContainer.innerHTML = `
+        <h3>Scan QR Code with Google Pay</h3>
+        <div id="gpay-qr-code"></div>
+    `;
+    document.querySelector('.gpay-form').appendChild(gpayContainer);
+
+    // Enhanced error handling
+    function handlePaymentError(error, method) {
+        console.error(`${method} payment error:`, error);
+        const errorMessages = {
+            gpay: 'Error processing Google Pay. Please try again or use another payment method.',
+            card: 'Error processing card payment. Please check your details and try again.',
+            paytm: 'Error processing Paytm payment. Please try again.',
+            upi: 'Error processing UPI payment. Please try again.'
+        };
+        alert(errorMessages[method] || 'Payment error occurred. Please try again.');
+    }
+
+    // Payment amount validation
+    function validatePaymentAmount(amount) {
+        if (isNaN(amount) || amount <= 0) {
+            throw new Error('Invalid payment amount');
+        }
+        return true;
+    }
+
+    // Billing info validation
+    function validateBillingInfo(info) {
+        const requiredFields = ['fullName', 'email', 'phone', 'address'];
+        const missingFields = requiredFields.filter(field => !info[field]);
+        if (missingFields.length > 0) {
+            throw new Error(`Missing required billing information: ${missingFields.join(', ')}`);
+        }
+        return true;
+    }
+
+    // Process Google Pay payment
+    async function processGooglePayPayment(total, billingInfo) {
+        try {
+            validatePaymentAmount(total);
+            validateBillingInfo(billingInfo);
+
+            const gpayUpiId = 'joshva2003dj@oksbi';
+            
+            // Generate a unique transaction ID
+            const transactionId = 'EITEN' + Date.now();
+            
+            // Create UPI URL with proper parameters
+            const upiUrl = `upi://pay?pa=${gpayUpiId}&pn=${encodeURIComponent(billingInfo.fullName)}&am=${total}&cu=INR&tn=${encodeURIComponent('EITEN Order')}&tr=${transactionId}`;
+            
+            // Create Google Pay deep link
+            const gpayUrl = `https://gpay.app.goo.gl/pay?pa=${gpayUpiId}&pn=${encodeURIComponent(billingInfo.fullName)}&am=${total}&cu=INR&tn=${encodeURIComponent('EITEN Order')}&tr=${transactionId}`;
+
+            // Create order object
+            const order = {
+                items: JSON.parse(localStorage.getItem('cart')) || [],
+                billingInfo: billingInfo,
+                paymentMethod: 'gpay',
+                total: total,
+                date: new Date().toISOString(),
+                status: 'pending',
+                transactionId: transactionId,
+                paymentVerified: false
+            };
+
+            // Save order to localStorage
+            localStorage.setItem('latestOrder', JSON.stringify(order));
+
+            // Log payment attempt
+            console.log('Google Pay payment initiated:', {
+                amount: total,
+                upiId: gpayUpiId,
+                timestamp: new Date().toISOString(),
+                transactionId: transactionId
+            });
+
+            // Set payment timeout
+            const paymentTimeout = setTimeout(() => {
+                handlePaymentFailure(new Error('Payment session expired'));
+            }, 300000); // 5 minutes timeout
+
+            if (navigator.userAgent.match(/Android/i)) {
+                // For Android, try both UPI and Google Pay URLs
+                try {
+                    window.location.href = upiUrl;
+                } catch (e) {
+                    window.location.href = gpayUrl;
+                }
+            } else {
+                // For desktop, show QR code with UPI URL
+                await generateQRCode(upiUrl);
+                
+                // Show payment instructions
+                const paymentInstructions = document.createElement('div');
+                paymentInstructions.className = 'payment-instructions';
+                paymentInstructions.innerHTML = `
+                    <h3>Payment Instructions</h3>
+                    <ol>
+                        <li>Open Google Pay or any UPI app on your phone</li>
+                        <li>Scan the QR code above</li>
+                        <li>Complete the payment in your app</li>
+                        <li>You will be automatically redirected after successful payment</li>
+                    </ol>
+                    <div class="payment-status">
+                        <p>Payment Status: <span id="payment-status-text">Pending</span></p>
+                        <div class="payment-progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                `;
+                document.querySelector('.gpay-form').appendChild(paymentInstructions);
+
+                // Start payment verification
+                startPaymentVerification(transactionId, order);
+            }
+
+            clearTimeout(paymentTimeout);
+        } catch (error) {
+            handlePaymentError(error, 'gpay');
+            throw error;
+        }
+    }
+
+    // Function to verify payment status
+    async function verifyPaymentStatus(transactionId) {
+        try {
+            // In a real implementation, this would check with your payment gateway
+            // For now, we'll simulate checking with a delay
+            return new Promise((resolve) => {
+                // Simulate API call delay
+                setTimeout(() => {
+                    // Check if payment was actually made
+                    const order = JSON.parse(localStorage.getItem('latestOrder') || '{}');
+                    if (order.transactionId === transactionId) {
+                        // Only resolve as true if payment is actually verified
+                        const isPaymentComplete = confirm('Have you completed the payment in your UPI app?');
+                        if (isPaymentComplete) {
+                            order.paymentVerified = true;
+                            localStorage.setItem('latestOrder', JSON.stringify(order));
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    } else {
+                        resolve(false);
+                    }
+                }, 10000); // 10 seconds delay
+            });
+        } catch (error) {
+            console.error('Error verifying payment:', error);
+            return false;
+        }
+    }
+
+    // Function to start payment verification
+    function startPaymentVerification(transactionId, order) {
+        const maxAttempts = 30; // 5 minutes total (10 seconds * 30)
+        let attempts = 0;
+        const statusText = document.getElementById('payment-status-text');
+        const progressBar = document.querySelector('.progress-bar');
+
+        const checkInterval = setInterval(async () => {
+            try {
+                attempts++;
+                const isVerified = await verifyPaymentStatus(transactionId);
+                
+                // Update UI
+                const progress = (attempts / maxAttempts) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                if (isVerified) {
+                    clearInterval(checkInterval);
+                    statusText.textContent = 'Payment Verified';
+                    statusText.style.color = '#4CAF50';
+                    handlePaymentSuccess(order);
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    statusText.textContent = 'Payment Verification Timeout';
+                    statusText.style.color = '#f44336';
+                    handlePaymentFailure(new Error('Payment verification timeout'));
+                } else {
+                    statusText.textContent = `Waiting for Payment (${attempts}/${maxAttempts})`;
+                }
+            } catch (error) {
+                clearInterval(checkInterval);
+                handlePaymentFailure(error);
+            }
+        }, 10000); // Check every 10 seconds
+    }
+
+    // QR code generation
+    async function generateQRCode(upiUrl) {
+        try {
+            const qrContainer = document.getElementById('gpay-qr-container');
+            qrContainer.style.display = 'block';
+            
+            // Clear any existing QR code
+            const qrCodeElement = document.getElementById('gpay-qr-code');
+            qrCodeElement.innerHTML = '';
+            
+            // Create a canvas element for the QR code
+            const canvas = document.createElement('canvas');
+            canvas.id = 'gpay-qr-canvas';
+            qrCodeElement.appendChild(canvas);
+            
+            // Generate QR code with higher error correction
+            await QRCode.toCanvas(canvas, upiUrl, {
+                width: 256,
+                height: 256,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                },
+                errorCorrectionLevel: 'H' // High error correction for better scanning
+            });
+
+            // Add a click handler to the QR code for easy copying
+            canvas.addEventListener('click', () => {
+                navigator.clipboard.writeText(upiUrl).then(() => {
+                    alert('UPI URL copied to clipboard!');
+                }).catch(() => {
+                    alert('Could not copy UPI URL. Please scan the QR code.');
+                });
+            });
+        } catch (error) {
+            console.error('QR code generation error:', error);
+            alert('Error generating QR code. Please try another payment method.');
+        }
+    }
+
+    // Payment button click handler
     const payButton = document.querySelector('.pay-btn');
     if (payButton) {
-        payButton.addEventListener('click', function(e) {
+        payButton.addEventListener('click', async function(e) {
             e.preventDefault();
+            
+            const selectedMethod = document.querySelector('.payment-option.active')?.dataset.method;
+            if (!selectedMethod) {
+                alert('Please select a payment method');
+                return;
+            }
             
             // Disable button and show loading state
             this.disabled = true;
             this.innerHTML = '<span class="spinner"></span> Processing...';
             
-            // Process payment
-            processPayment().finally(() => {
-                // Re-enable button and restore original text
+            try {
+                const total = parseFloat(document.getElementById('total').textContent.replace('₹', ''));
+                const billingInfo = JSON.parse(localStorage.getItem('billingInfo')) || {};
+
+                switch(selectedMethod) {
+                    case 'gpay':
+                        await processGooglePayPayment(total, billingInfo);
+                        break;
+                    case 'card':
+                        // Handle card payment
+                        handleCardPayment(total, billingInfo);
+                        break;
+                    case 'paytm':
+                        // Handle Paytm payment
+                        handlePaytmPayment(total, billingInfo);
+                        break;
+                    case 'upi':
+                        // Handle UPI payment
+                        handleUPIPayment(total, billingInfo);
+                        break;
+                    default:
+                        throw new Error('Invalid payment method selected');
+                }
+            } catch (error) {
+                console.error('Payment processing error:', error);
+                alert('Error processing payment. Please try again.');
+                // Redirect to payment failed page
+                window.location.href = 'payment-success.html?status=failed&error=' + encodeURIComponent(error.message);
+            } finally {
+                // Re-enable button
                 this.disabled = false;
                 this.innerHTML = 'Pay Now';
-            });
+            }
         });
     }
-});
 
-function processPayment() {
-    return new Promise((resolve, reject) => {
-        console.log('Payment process started');
-        const paymentMethod = document.querySelector('.payment-option.active');
-        if (!paymentMethod) {
-            alert('Please select a payment method');
-            reject(new Error('No payment method selected'));
-            return;
+    // Helper function to handle payment success
+    function handlePaymentSuccess(order) {
+        try {
+            // Update order status
+            order.status = 'completed';
+            order.completedAt = new Date().toISOString();
+            order.paymentVerified = true;
+            localStorage.setItem('latestOrder', JSON.stringify(order));
+            
+            // Update inventory stock and sold count
+            updateInventoryStock(order.items);
+            
+            // Update sales history
+            updateProductSalesHistory(order);
+            
+            // Clear cart
+            localStorage.removeItem('cart');
+            
+            // Redirect to success page
+            window.location.href = 'payment-success.html?status=success&ORDER_ID=' + order.transactionId;
+        } catch (error) {
+            console.error('Error in payment success handling:', error);
+            handlePaymentFailure(error);
         }
+    }
 
-        const method = paymentMethod.dataset.method;
-        const total = parseFloat(document.getElementById('total').textContent.replace('₹', ''));
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const billingInfo = JSON.parse(localStorage.getItem('billingInfo')) || {};
-        
-        // Validate cart and billing info
-        if (cart.length === 0) {
-            alert('Your cart is empty. Please add items to your cart before proceeding.');
-            reject(new Error('Empty cart'));
-            return;
+    // Function to update inventory stock
+    function updateInventoryStock(items) {
+        try {
+            // Get current inventory from localStorage
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            
+            // Update stock for each item in the order
+            items.forEach(item => {
+                const inventoryItem = inventory.find(inv => inv.id === item.id);
+                if (inventoryItem) {
+                    // Reduce stock by the quantity purchased
+                    inventoryItem.stock = Math.max(0, inventoryItem.stock - (item.quantity || 1));
+                    
+                    // Update sold count
+                    inventoryItem.sold = (inventoryItem.sold || 0) + (item.quantity || 1);
+                    
+                    // Update last sold date
+                    inventoryItem.lastSold = new Date().toISOString();
+                }
+            });
+            
+            // Save updated inventory back to localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            
+            // Log inventory update
+            console.log('Inventory updated after successful payment:', inventory);
+        } catch (error) {
+            console.error('Error updating inventory:', error);
+            throw error;
         }
+    }
 
-        if (!billingInfo.fullName || !billingInfo.email) {
-            alert('Billing information is incomplete. Please complete your billing details.');
-            reject(new Error('Incomplete billing info'));
-            return;
+    // Function to update product sales history
+    function updateProductSalesHistory(order) {
+        try {
+            // Get current sales history from localStorage
+            let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+            
+            // Add new sale record
+            const saleRecord = {
+                orderId: order.transactionId,
+                date: new Date().toISOString(),
+                items: order.items.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    quantity: item.quantity || 1,
+                    price: item.price
+                })),
+                totalAmount: order.total,
+                paymentMethod: order.paymentMethod
+            };
+            
+            // Add to sales history
+            salesHistory.push(saleRecord);
+            
+            // Save updated sales history
+            localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+            
+            // Log sales update
+            console.log('Sales history updated:', saleRecord);
+        } catch (error) {
+            console.error('Error updating sales history:', error);
+            throw error;
         }
+    }
 
-        if (method === 'card') {
-            // Enhanced card validation
-            const cardNumber = document.getElementById('cardNumber')?.value.replace(/\s/g, '');
-            const expiry = document.getElementById('expiry')?.value;
-            const cvv = document.getElementById('cvv')?.value;
-            const cardName = document.getElementById('cardName')?.value;
-            
-            const validationErrors = [];
-            if (!cardNumber) validationErrors.push('Card number is required');
-            if (!expiry) validationErrors.push('Expiry date is required');
-            if (!cvv) validationErrors.push('CVV is required');
-            if (!cardName) validationErrors.push('Cardholder name is required');
-            
-            if (validationErrors.length > 0) {
-                alert(validationErrors.join('\n'));
-                reject(new Error('Validation failed'));
-                return;
-            }
-            
-            // Luhn algorithm for card number validation
-            if (!validateCardNumber(cardNumber)) {
-                alert('Please enter a valid card number');
-                reject(new Error('Invalid card number'));
-                return;
-            }
-            
-            // Validate expiry date format and future date
-            if (!expiry.match(/^(0[1-9]|1[0-2])\/([0-9]{2})$/)) {
-                alert('Please enter a valid expiry date (MM/YY)');
-                reject(new Error('Invalid expiry date'));
-                return;
-            }
-            
-            const [month, year] = expiry.split('/');
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear() % 100;
-            const currentMonth = currentDate.getMonth() + 1;
-            
-            if (parseInt(year) < currentYear || 
-                (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
-                alert('Card has expired');
-                reject(new Error('Card expired'));
-                return;
-            }
-            
-            // Validate CVV
-            if (!cvv.match(/^[0-9]{3,4}$/)) {
-                alert('Please enter a valid CVV (3 or 4 digits)');
-                reject(new Error('Invalid CVV'));
-                return;
-            }
-        } else if (method === 'upi') {
-            const upiId = document.getElementById('upiId')?.value;
-            if (!upiId || !upiId.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/)) {
-                alert('Please enter a valid UPI ID');
-                reject(new Error('Invalid UPI ID'));
-                return;
-            }
-        }
-
-        // Create order object
-        const order = {
-            items: cart,
-            billingInfo: billingInfo,
-            paymentMethod: method,
-            total: total,
-            date: new Date().toISOString(),
-            status: 'pending'
-        };
-
-        // Save order to localStorage
+    // Helper function to handle payment failure
+    function handlePaymentFailure(error) {
+        console.error('Payment failed:', error);
+        // Update order status
+        const order = JSON.parse(localStorage.getItem('latestOrder') || '{}');
+        order.status = 'failed';
+        order.error = error.message;
         localStorage.setItem('latestOrder', JSON.stringify(order));
 
-        // Redirect to appropriate payment portal
-        switch(method) {
-            case 'paytm':
-                // Paytm integration with merchant ID
-                const paytmUrl = `https://securegw.paytm.in/theia/processTransaction?ORDER_ID=${order.date.replace(/[^a-zA-Z0-9]/g, '')}&TXN_AMOUNT=${total}&CUST_ID=${billingInfo.email}&INDUSTRY_TYPE_ID=Retail&CHANNEL_ID=WEB&WEBSITE=WEBSTAGING&MID=8110038208@ptyes&CALLBACK_URL=${encodeURIComponent(window.location.origin + '/payment-success.html')}`;
-                
-                // Add loading state
-                const payButton = document.querySelector('.pay-btn');
-                if (payButton) {
-                    payButton.disabled = true;
-                    payButton.innerHTML = '<span class="spinner"></span> Redirecting to Paytm...';
-                }
-                
-                try {
-                    // Check if we're in a mobile environment
-                    if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                        window.location.href = paytmUrl;
-                    } else {
-                        // For desktop, open in new tab
-                        const newWindow = window.open(paytmUrl, '_blank');
-                        if (!newWindow) {
-                            throw new Error('Popup blocked. Please allow popups for this site.');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Paytm redirection error:', error);
-                    alert('Error redirecting to Paytm. Please try again or use another payment method.');
-                    if (payButton) {
-                        payButton.disabled = false;
-                        payButton.innerHTML = 'Pay Now';
-                    }
-                    reject(error);
-                }
-                break;
-                
-            case 'gpay':
-                // Replace YOUR_UPI_ID with actual UPI ID
-                const gpayUrl = `https://gpay.app.goo.gl/pay?pa=YOUR_UPI_ID&pn=${encodeURIComponent(billingInfo.fullName)}&am=${total}&cu=INR&tn=${encodeURIComponent('EITEN Order')}&tr=${order.date.replace(/[^a-zA-Z0-9]/g, '')}`;
-                try {
-                    if (navigator.userAgent.match(/Android/i)) {
-                        window.location.href = gpayUrl;
-                    } else {
-                        window.open(gpayUrl, '_blank');
-                    }
-                } catch (error) {
-                    console.error('Google Pay redirection error:', error);
-                    alert('Error redirecting to Google Pay. Please try again or use another payment method.');
-                    reject(error);
-                }
-                break;
-                
-            case 'upi':
-                const upiId = document.getElementById('upiId').value;
-                const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(billingInfo.fullName)}&am=${total}&cu=INR&tn=${encodeURIComponent('EITEN Order')}&tr=${order.date.replace(/[^a-zA-Z0-9]/g, '')}`;
-                try {
-                    if (navigator.userAgent.match(/Android/i)) {
-                        window.location.href = upiUrl;
-                    } else {
-                        alert('Please open this page on an Android device with a UPI app installed, or use another payment method.');
-                        reject(new Error('UPI not supported on this device'));
-                    }
-                } catch (error) {
-                    console.error('UPI redirection error:', error);
-                    alert('Error redirecting to UPI. Please try again or use another payment method.');
-                    reject(error);
-                }
-                break;
-                
-            case 'card':
-                try {
-                    // Simulate card payment processing
-                    setTimeout(() => {
-                        // Update order status
-                        order.status = 'completed';
-                        localStorage.setItem('latestOrder', JSON.stringify(order));
-                        
-                        // Clear cart
-                        localStorage.removeItem('cart');
-                        
-                        // Redirect to confirmation page
-                        window.location.href = 'confirmation.html';
-                        resolve();
-                    }, 2000);
-                } catch (error) {
-                    console.error('Card payment error:', error);
-                    alert('Error processing card payment. Please try again.');
-                    reject(error);
-                }
-                break;
-                
-            default:
-                alert('Invalid payment method selected');
-                reject(new Error('Invalid payment method'));
-                return;
+        // Redirect to failure page
+        window.location.href = 'payment-success.html?status=failed&error=' + encodeURIComponent(error.message);
+    }
+
+    // Add styles for payment instructions
+    const style = document.createElement('style');
+    style.textContent = `
+        .payment-instructions {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-    });
-}
+        
+        .payment-instructions h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .payment-instructions ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .payment-instructions li {
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .payment-status {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .payment-progress {
+            margin-top: 0.5rem;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    `;
+    document.head.appendChild(style);
+});
 
 // Luhn algorithm for card number validation
 function validateCardNumber(cardNumber) {

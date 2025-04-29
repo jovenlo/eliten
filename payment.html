@@ -11,7 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
     <nav>
@@ -90,7 +91,11 @@
                     <p>You will be redirected to Paytm to complete your payment.</p>
                 </div>
                 <div class="gpay-form" style="display: none;">
-                    <p>You will be redirected to Google Pay to complete your payment.</p>
+                    <div id="gpay-qr-container" style="display: none;">
+                        <h3>Scan QR Code with Google Pay</h3>
+                        <div id="gpay-qr-code"></div>
+                    </div>
+                    <p id="gpay-message">You will be redirected to Google Pay to complete your payment.</p>
                 </div>
                 <div class="upi-form" style="display: none;">
                     <div class="form-group">
@@ -111,18 +116,18 @@
                 <span id="subtotal">₹0.00</span>
             </div>
             <div class="summary-item">
-                <span>Tax (10%):</span>
-                <span id="tax">₹0.00</span>
+                <span>Tax:</span>
+                <span id="tax">₹1.00</span>
             </div>
             <div class="summary-item">
                 <span>Shipping:</span>
-                <span id="shipping">₹5.99</span>
+                <span id="shipping">₹0.00</span>
             </div>
             <div class="summary-item total">
                 <span>Total:</span>
                 <span id="total">₹0.00</span>
             </div>
-            <button onclick="processPayment()" class="pay-btn">Pay Now</button>
+            <button class="pay-btn">Pay Now</button>
         </div>
     </div>
 

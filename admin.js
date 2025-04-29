@@ -779,7 +779,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Render inventory table
     function renderInventoryTable(data) {
-    const inventoryTable = document.querySelector('.inventory-table tbody');
+        const inventoryTable = document.querySelector('.inventory-table tbody');
         if (!inventoryTable) {
             console.error('Inventory table element not found');
             return;
@@ -791,7 +791,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.length === 0) {
             inventoryTable.innerHTML = `
                 <tr>
-                    <td colspan="3" class="no-data">No products found</td>
+                    <td colspan="4" class="no-data">No products found</td>
                 </tr>
             `;
             return;
@@ -802,7 +802,10 @@ document.addEventListener('DOMContentLoaded', function() {
             row.innerHTML = `
                 <td>${item.name}</td>
                 <td>${item.stock}</td>
-                <td>0</td>
+                <td>${item.sold || 0}</td>
+                <td class="action-buttons">
+                    <button class="btn-edit" onclick="editInventory('${item.id}')">Edit</button>
+                </td>
             `;
             inventoryTable.appendChild(row);
         });
@@ -852,7 +855,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const inventoryData = products.map(product => ({
                 id: product.id,
                 name: product.name,
-                stock: product.stock || 0
+                stock: product.stock || 0,
+                sold: product.sold || 0
             }));
 
             console.log('Rendering inventory table...');
@@ -888,6 +892,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: product.name,
                 price: product.price,
                 stock: product.stock,
+                sold: product.sold || 0,
                 lowStockThreshold: product.low_stock_threshold || 5
             }));
 
@@ -914,7 +919,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     case 'stock':
                         return a.stock - b.stock;
                     case 'sold':
-                        return 0; // Add sold count logic if needed
+                        return (a.sold || 0) - (b.sold || 0);
                     default:
                         return 0;
                 }
@@ -927,6 +932,193 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('Error filtering inventory data', 'error');
         }
     }
+
+    // Function to edit inventory
+    window.editInventory = async function(productId) {
+        try {
+            console.log('Editing inventory for product:', productId);
+            
+            // Fetch the current product data
+            const { data: product, error: fetchError } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .eq('id', productId)
+                .single();
+
+            if (fetchError) {
+                console.error('Error fetching product:', fetchError);
+                throw fetchError;
+            }
+
+            if (!product) {
+                throw new Error('Product not found');
+            }
+
+            // Create edit form
+            const editForm = document.createElement('div');
+            editForm.className = 'edit-inventory-form';
+            editForm.innerHTML = `
+                <h3>Edit Inventory</h3>
+                <form id="edit-inventory-form">
+                    <div class="form-group">
+                        <label for="edit-stock">Current Stock</label>
+                        <input type="number" id="edit-stock" value="${product.stock || 0}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-sold">Sold Count</label>
+                        <input type="number" id="edit-sold" value="${product.sold || 0}" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Save Changes</button>
+                        <button type="button" class="cancel-btn" onclick="closeInventoryEditForm()">Cancel</button>
+                    </div>
+                </form>
+            `;
+
+            // Add form to the page
+            document.body.appendChild(editForm);
+
+            // Handle form submission
+            document.getElementById('edit-inventory-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                try {
+                    // First, try to update only the stock
+                    const updatedInventory = {
+                        stock: parseInt(document.getElementById('edit-stock').value),
+                        updated_at: new Date().toISOString()
+                    };
+
+                    console.log('Updating inventory:', updatedInventory);
+
+                    // Try to update with both fields first
+                    try {
+                        updatedInventory.sold = parseInt(document.getElementById('edit-sold').value);
+                        const { error: updateError } = await window.supabaseClient
+                            .from('products')
+                            .update(updatedInventory)
+                            .eq('id', productId);
+
+                        if (updateError) {
+                            // If error is about missing 'sold' column, try updating only stock
+                            if (updateError.code === 'PGRST204') {
+                                delete updatedInventory.sold;
+                                const { error: stockUpdateError } = await window.supabaseClient
+                                    .from('products')
+                                    .update(updatedInventory)
+                                    .eq('id', productId);
+
+                                if (stockUpdateError) {
+                                    throw stockUpdateError;
+                                }
+                                showNotification('Stock updated successfully! Note: Sold count feature is not available yet.', 'info');
+                            } else {
+                                throw updateError;
+                            }
+                        } else {
+                            showNotification('Inventory updated successfully!', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Error updating inventory:', error);
+                        throw error;
+                    }
+
+                    closeInventoryEditForm();
+                    
+                    // Refresh inventory display
+                    await initializeInventory();
+                } catch (error) {
+                    console.error('Error updating inventory:', error);
+                    showNotification('Error updating inventory: ' + error.message, 'error');
+                }
+            });
+        } catch (error) {
+            console.error('Error in editInventory:', error);
+            showNotification('Error editing inventory: ' + error.message, 'error');
+        }
+    };
+
+    // Function to close inventory edit form
+    window.closeInventoryEditForm = function() {
+        const editForm = document.querySelector('.edit-inventory-form');
+        if (editForm) {
+            editForm.remove();
+        }
+    };
+
+    // Add styles for inventory edit form
+    const inventoryEditFormStyle = document.createElement('style');
+    inventoryEditFormStyle.textContent = `
+        .edit-inventory-form {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .edit-inventory-form h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .edit-inventory-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .edit-inventory-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .edit-inventory-form input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .edit-inventory-form .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .edit-inventory-form .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-inventory-form .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-inventory-form .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .edit-inventory-form .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+    `;
+    document.head.appendChild(inventoryEditFormStyle);
 
     // Add event listeners for inventory controls
     document.getElementById('inventory-search').addEventListener('input', filterAndSortInventory);

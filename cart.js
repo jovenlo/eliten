@@ -8,6 +8,7 @@ function loadCart() {
     const subtotalElement = document.getElementById('subtotal');
     const taxElement = document.getElementById('tax');
     const totalElement = document.getElementById('total');
+    const shippingElement = document.getElementById('shipping');
     
     let subtotal = 0;
     
@@ -89,12 +90,19 @@ function removeItem(index) {
 }
 
 function updateSummary(subtotal) {
-    const tax = subtotal * 0.1;
-    const shipping = 5.99;
+    // Fixed tax amount of ₹1
+    const tax = 1;
+    
+    // Shipping is always free
+    const shipping = 0;
+    
+    // Calculate total
     const total = subtotal + tax + shipping;
 
+    // Update the display with formatted amounts
     document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
     document.getElementById('tax').textContent = `₹${tax.toFixed(2)}`;
+    document.getElementById('shipping').textContent = `₹${shipping.toFixed(2)}`;
     document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
 }
 
